@@ -1,6 +1,45 @@
 <?php
 // показывать или нет выполненные задачи
 $show_complete_tasks = rand(0, 1);
+$projects = ["Все","Входящие", "Учеба", "Работа", "Домашние дела", "Авто"];
+$task_list = [
+    [
+        'task' => 'Собеседование в IT компании',
+        'date' => '01.06.2018',
+        'category' => 'Работа',
+        'status' => 'Нет'
+    ],
+    [
+        'task' => 'Выполнить тестовое задание',
+        'date' => '25.05.2018',
+        'category' => 'Работа',
+        'status' => 'Нет'
+    ],
+    [
+        'task' => 'Сделать задание первого раздела',
+        'date' => '21.04.2018',
+        'category' => 'Учеба',
+        'status' => 'Да'
+    ],
+    [
+        'task' => 'Встреча с другом',
+        'date' => '22.04.2018',
+        'category' => 'Входящие',
+        'status' => 'Нет'
+    ],
+    [
+        'task' => 'Купить корм для кота',
+        'date' => 'Нет',
+        'category' => 'Домашние дела',
+        'status' => 'Нет'
+    ],
+    [
+        'task' => 'Заказать пиццу',
+        'date' => 'Нет',
+        'category' => 'Домашние дела',
+        'status' => 'Нет'
+    ]
+];
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -45,22 +84,17 @@ $show_complete_tasks = rand(0, 1);
 
                 <nav class="main-navigation">
                     <?php
-                    $projects = ["Все","Входящие", "Учеба", "Работа", "Домашние дела", "Авто"];
-                    //print(count($projects));
                     ?>
                     <ul class="main-navigation__list">
                         <?php
-                        $index = 1;
-                        $projects_lenght = count($projects);
-                        print('<li class="main-navigation__list-item main-navigation__list-item--active">
-                            <a class="main-navigation__list-item-link" href="#">'.$projects[0].'</a></li>');
-                        while ($index < $projects_lenght){
-                            $project = $projects[$index];
-                            print('<li class="main-navigation__list-item">
-                            <a class="main-navigation__list-item-link" href="#">'.$project.'</a></li>');
-                            $index++;
-                        }
-                        ?>
+                        foreach ($projects as $key => $value){
+                            if($key == 0): ?>
+                                <li class="main-navigation__list-item main-navigation__list-item--active">
+                            <?php else: ?>
+                                 <li class="main-navigation__list-item">
+                            <?php endif; ?>
+                            <a class="main-navigation__list-item-link" href="#"><?=$value ?></a></li>
+                        <? } ?>
                         <!--<li class="main-navigation__list-item">
                             <a class="main-navigation__list-item-link" href="#">Входящие</a>
                             <span class="main-navigation__list-item-count">24</span>
@@ -120,72 +154,42 @@ $show_complete_tasks = rand(0, 1);
                 <table class="tasks">
                     <!--показывать следующий тег <tr/>, если переменная $show_complete_tasks равна единице-->
                     <?php
-                    $task_list = [
-                        [
-                            'task' => 'Собеседование в IT компании',
-                            'date' => '01.06.2018',
-                            'category' => 'Работа',
-                            'status' => 'Нет'
-                        ],
-                        [
-                            'task' => 'Выполнить тестовое задание',
-                            'date' => '25.05.2018',
-                            'category' => 'Работа',
-                            'status' => 'Нет'
-                        ],
-                        [
-                            'task' => 'Сделать задание первого раздела',
-                            'date' => '21.04.2018',
-                            'category' => 'Учеба',
-                            'status' => 'Да'
-                        ],
-                        [
-                            'task' => 'Встреча с другом',
-                            'date' => '22.04.2018',
-                            'category' => 'Входящие',
-                            'status' => 'Нет'
-                        ],
-                        [
-                            'task' => 'Купить корм для кота',
-                            'date' => 'Нет',
-                            'category' => 'Домашние дела',
-                            'status' => 'Нет'
-                        ],
-                        [
-                            'task' => 'Заказать пиццу',
-                            'date' => 'Нет',
-                            'category' => 'Домашние дела',
-                            'status' => 'Нет'
-                        ]
-                    ];
-                    /*if($task_list[0]['status'] == 'Нет') {
-                        print('<p>ok</p>');
-                    }*/
-                    $index = 0;
-                    $task_number = count($task_list);
-                    while ($index < $task_number){
-                        if($task_list[$index]['status'] == 'Да') {
-                            print('<tr class="tasks__item task task--completed">
-                                <td class="task__select">
-                                  <label class="checkbox task__checkbox">');
-                            print('<input class="checkbox__input visually-hidden" type="checkbox" checked>');
-                        }
-                        else{
-                            print('<tr class="tasks__item task">
-                                <td class="task__select">
-                                  <label class="checkbox task__checkbox">');
-                            print('<input class="checkbox__input visually-hidden" type="checkbox">');
-                        }
+                    foreach ($task_list as $key => $value){
+                        if($task_list[$key]['status'] == 'Да') : ?>
+                            <tr class="tasks__item task task--completed">
+                        <? else: ?>
+                            <tr class="tasks__item task">
+                        <? endif; ?>
+                            <td class="task__select">
+                                <label class="checkbox task__checkbox">
+                                <input class="checkbox__input visually-hidden" type="checkbox">
+                                    <a href="/"><span class="checkbox__text"><?=$task_list[$key]['task']?></span></a>
+                                </label>
+                            </td>
+                        <td class="task__date"><?=$task_list[$key]['date']?></td>
+                        <td class="task__controls"><?=$task_list[$key]['category']?></td>
+                    <? } ?>
 
-                        print('<a href="/"><span class="checkbox__text">'.$task_list[$index]['task'].'</span></a>
-                               </label>
-                            </td>');
-                        print('<td class="task__date">'.$task_list[$index]['date'].'</td>');
-                        print('<td class="task__controls">'.$task_list[$index]['category'].'</td>');
-                        $index++;
-                    }
+                    <?php
+
+                    /* function count_in_category($tasks, $category) {
+                        $tasks_number = count($tasks);
+                        $i = 0;
+                        $task_in_category = 0;
+                        if($category == 'Все') {
+                            $task_in_category = $tasks_number;
+                        }
+                        while ($i < $tasks_number){
+                            if ($tasks[$i]['category'] == $category){
+                                $task_in_category++;
+                            }
+                            $i++;
+                        }
+                        return $task_in_category;
+                    };*/
+
                     ?>
-                    <!--<?php if($show_complete_tasks == 1): ?>
+                    <!--
                     <tr class="tasks__item task task--completed">
                         <td class="task__select">
                             <label class="checkbox task__checkbox">
@@ -212,7 +216,7 @@ $show_complete_tasks = rand(0, 1);
                         <td class="task__controls">
                         </td>
                     </tr>
-                    <?php endif; ?>-->
+                    -->
                 </table>
             </main>
         </div>
