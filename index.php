@@ -180,7 +180,6 @@ function count_in_category($tasks, $category) {
                         </td>
                     </tr>
                     <?php endif;
-                    print(count_in_category($task_list, 'Авто'));
                     ?>
                 </table>
             </main>
