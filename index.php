@@ -7,37 +7,37 @@ $task_list = [
         'task' => 'Собеседование в IT компании',
         'date' => '01.06.2018',
         'category' => 'Работа',
-        'status' => 'Нет'
+        'status' => false
     ],
     [
         'task' => 'Выполнить тестовое задание',
         'date' => '25.05.2018',
         'category' => 'Работа',
-        'status' => 'Нет'
+        'status' => false
     ],
     [
         'task' => 'Сделать задание первого раздела',
         'date' => '21.04.2018',
         'category' => 'Учеба',
-        'status' => 'Да'
+        'status' => true
     ],
     [
         'task' => 'Встреча с другом',
         'date' => '22.04.2018',
         'category' => 'Входящие',
-        'status' => 'Нет'
+        'status' => false
     ],
     [
         'task' => 'Купить корм для кота',
         'date' => 'Нет',
         'category' => 'Домашние дела',
-        'status' => 'Нет'
+        'status' => false
     ],
     [
         'task' => 'Заказать пиццу',
         'date' => 'Нет',
         'category' => 'Домашние дела',
-        'status' => 'Нет'
+        'status' => false
     ]
 ];
 ?>
@@ -90,31 +90,6 @@ $task_list = [
                             <a class="main-navigation__list-item-link" href="#"><?=$value ?></a>
                         </li>
                         <? endforeach; ?>
-
-                        <!--<li class="main-navigation__list-item">
-                            <a class="main-navigation__list-item-link" href="#">Входящие</a>
-                            <span class="main-navigation__list-item-count">24</span>
-                        </li>
-
-                        <li class="main-navigation__list-item main-navigation__list-item--active">
-                            <a class="main-navigation__list-item-link" href="#">Работа</a>
-                            <span class="main-navigation__list-item-count">12</span>
-                        </li>
-
-                        <li class="main-navigation__list-item">
-                            <a class="main-navigation__list-item-link" href="#">Здоровье</a>
-                            <span class="main-navigation__list-item-count">3</span>
-                        </li>
-
-                        <li class="main-navigation__list-item">
-                            <a class="main-navigation__list-item-link" href="#">Домашние дела</a>
-                            <span class="main-navigation__list-item-count">7</span>
-                        </li>
-
-                        <li class="main-navigation__list-item">
-                            <a class="main-navigation__list-item-link" href="#">Авто</a>
-                            <span class="main-navigation__list-item-count">0</span>
-                        </li>-->
                     </ul>
                 </nav>
 
@@ -151,7 +126,7 @@ $task_list = [
                     <!--показывать следующий тег <tr/>, если переменная $show_complete_tasks равна единице-->
                     <?php
                     foreach ($task_list as $value): ?>
-                       <tr class="tasks__item task <? if($value['status'] == 'Да') : print("task--completed"); endif; ?> ">
+                       <tr class="tasks__item task <? if($value['status']) : print("task--completed"); endif; ?> ">
                             <td class="task__select">
                                 <label class="checkbox task__checkbox">
                                 <input class="checkbox__input visually-hidden" type="checkbox">
