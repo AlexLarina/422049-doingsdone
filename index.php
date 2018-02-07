@@ -42,10 +42,9 @@ $task_list = [
 ];
 
 function count_in_category($tasks, $category) {
-    $tasks_number = count($tasks);
     $task_in_category = 0;
     if($category == 'Все') {
-        $task_in_category = $tasks_number;
+        $task_in_category = count($tasks);
     }
     foreach ($tasks as $value){
         if ($value['category'] == $category){
@@ -179,8 +178,7 @@ function count_in_category($tasks, $category) {
                         <td class="task__controls">
                         </td>
                     </tr>
-                    <?php endif;
-                    ?>
+                    <?php endif; ?>
                 </table>
             </main>
         </div>
