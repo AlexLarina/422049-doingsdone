@@ -40,6 +40,19 @@ $task_list = [
         'status' => false
     ]
 ];
+
+function count_in_category($tasks, $category) {
+    $task_in_category = 0;
+    if($category == 'Все') {
+        $task_in_category = count($tasks);
+    }
+    foreach ($tasks as $value){
+        if ($value['category'] == $category){
+            $task_in_category++;
+        }
+    }
+    return $task_in_category;
+};
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -88,6 +101,7 @@ $task_list = [
                         foreach ($projects as $key => $value) : ?>
                         <li class="main-navigation__list-item <? if($key == 0): print('main-navigation__list-item--active'); endif; ?> ">
                             <a class="main-navigation__list-item-link" href="#"><?=$value ?></a>
+                            <span class="main-navigation__list-item-count"><?=count_in_category($task_list, $value)?></span>
                         </li>
                         <? endforeach; ?>
                     </ul>
