@@ -83,18 +83,14 @@ $task_list = [
                 <h2 class="content__side-heading">Проекты</h2>
 
                 <nav class="main-navigation">
-                    <?php
-                    ?>
                     <ul class="main-navigation__list">
                         <?php
-                        foreach ($projects as $key => $value){
-                            if($key == 0): ?>
-                                <li class="main-navigation__list-item main-navigation__list-item--active">
-                            <?php else: ?>
-                                 <li class="main-navigation__list-item">
-                            <?php endif; ?>
-                            <a class="main-navigation__list-item-link" href="#"><?=$value ?></a></li>
-                        <? } ?>
+                        foreach ($projects as $key => $value) : ?>
+                        <li class="main-navigation__list-item <? if($key == 0): print('main-navigation__list-item--active'); endif; ?> ">
+                            <a class="main-navigation__list-item-link" href="#"><?=$value ?></a>
+                        </li>
+                        <? endforeach; ?>
+
                         <!--<li class="main-navigation__list-item">
                             <a class="main-navigation__list-item-link" href="#">Входящие</a>
                             <span class="main-navigation__list-item-count">24</span>
@@ -154,42 +150,19 @@ $task_list = [
                 <table class="tasks">
                     <!--показывать следующий тег <tr/>, если переменная $show_complete_tasks равна единице-->
                     <?php
-                    foreach ($task_list as $key => $value){
-                        if($task_list[$key]['status'] == 'Да') : ?>
-                            <tr class="tasks__item task task--completed">
-                        <? else: ?>
-                            <tr class="tasks__item task">
-                        <? endif; ?>
+                    foreach ($task_list as $value): ?>
+                       <tr class="tasks__item task <? if($value['status'] == 'Да') : print("task--completed"); endif; ?> ">
                             <td class="task__select">
                                 <label class="checkbox task__checkbox">
                                 <input class="checkbox__input visually-hidden" type="checkbox">
-                                    <a href="/"><span class="checkbox__text"><?=$task_list[$key]['task']?></span></a>
+                                    <a href="/"><span class="checkbox__text"><?=$value['task']?></span></a>
                                 </label>
                             </td>
-                        <td class="task__date"><?=$task_list[$key]['date']?></td>
-                        <td class="task__controls"><?=$task_list[$key]['category']?></td>
-                    <? } ?>
-
-                    <?php
-
-                    /* function count_in_category($tasks, $category) {
-                        $tasks_number = count($tasks);
-                        $i = 0;
-                        $task_in_category = 0;
-                        if($category == 'Все') {
-                            $task_in_category = $tasks_number;
-                        }
-                        while ($i < $tasks_number){
-                            if ($tasks[$i]['category'] == $category){
-                                $task_in_category++;
-                            }
-                            $i++;
-                        }
-                        return $task_in_category;
-                    };*/
-
-                    ?>
-                    <!--
+                            <td class="task__date"><?=$value['date']?></td>
+                            <td class="task__controls"><?=$value['category']?></td>
+                       </tr>
+                    <? endforeach; ?>
+                    <?php if($show_complete_tasks == 1): ?>
                     <tr class="tasks__item task task--completed">
                         <td class="task__select">
                             <label class="checkbox task__checkbox">
@@ -216,7 +189,7 @@ $task_list = [
                         <td class="task__controls">
                         </td>
                     </tr>
-                    -->
+                    <?php endif; ?>
                 </table>
             </main>
         </div>
