@@ -31,11 +31,11 @@
             <td class="task__select">
                 <label class="checkbox task__checkbox">
                     <input class="checkbox__input visually-hidden" type="checkbox">
-                    <a href="/"><span class="checkbox__text"><?=$value['task']?></span></a>
+                    <a href="/"><span class="checkbox__text"><?=htmlspecialchars($value['task'])?></span></a>
                 </label>
             </td>
-            <td class="task__date"><?=$value['date']?></td>
-            <td class="task__controls"><?=$value['category']?></td>
+            <td class="task__date"><?=htmlspecialchars($value['date'])?></td>
+            <td class="task__controls"><?=htmlspecialchars($value['category'])?></td>
         </tr>
     <? endforeach; ?>
     <?php if($show_complete_tasks == 1): ?>
