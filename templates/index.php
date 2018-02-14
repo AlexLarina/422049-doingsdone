@@ -27,7 +27,8 @@
     <!--показывать следующий тег <tr/>, если переменная $show_complete_tasks равна единице-->
     <?php
     foreach ($task_list as $value): ?>
-        <tr class="tasks__item task <? if($value['status'] and $show_complete_tasks == 1) : print("task--completed"); endif; ?>">
+        <? if (!($value['status'] and $show_complete_tasks == 1)): ?>
+        <tr class="tasks__item task <? if($value['status']) : print("task--completed"); endif; ?>">
             <td class="task__select">
                 <label class="checkbox task__checkbox">
                     <input class="checkbox__input visually-hidden" type="checkbox">
@@ -37,5 +38,6 @@
             <td class="task__date"><?=htmlspecialchars($value['date'])?></td>
             <td class="task__controls"><?=$value['category']?></td>
         </tr>
+    <? endif; ?>
     <? endforeach; ?>
 </table>
