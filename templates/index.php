@@ -27,7 +27,7 @@
     <!--показывать следующий тег <tr/>, если переменная $show_complete_tasks равна единице-->
     <?php
     foreach ($task_list as $value): ?>
-        <tr class="tasks__item task <? if($value['status']) : print("task--completed"); endif; ?> ">
+        <tr class="tasks__item task <? if($value['status'] and $show_complete_tasks == 1) : print("task--completed"); endif; ?>">
             <td class="task__select">
                 <label class="checkbox task__checkbox">
                     <input class="checkbox__input visually-hidden" type="checkbox">
@@ -35,35 +35,7 @@
                 </label>
             </td>
             <td class="task__date"><?=htmlspecialchars($value['date'])?></td>
-            <td class="task__controls"><?=htmlspecialchars($value['category'])?></td>
+            <td class="task__controls"><?=$value['category']?></td>
         </tr>
     <? endforeach; ?>
-    <?php if($show_complete_tasks == 1): ?>
-        <tr class="tasks__item task task--completed">
-            <td class="task__select">
-                <label class="checkbox task__checkbox">
-                    <input class="checkbox__input visually-hidden" type="checkbox" checked>
-                    <a href="/"><span class="checkbox__text">Сделать главную страницу Дела в порядке</span></a>
-                </label>
-            </td>
-
-            <td class="task__file">
-                <a class="download-link" href="#">Home.psd</a>
-            </td>
-
-            <td class="task__date"></td>
-        </tr>
-        <tr class="tasks__item task task--completed">
-            <td class="task__select">
-                <label class="checkbox task__checkbox">
-                    <input class="checkbox__input visually-hidden" type="checkbox" checked>
-                    <span class="checkbox__text">Записаться на интенсив "Базовый PHP"</span>
-                </label>
-            </td>
-            <td class="task__date">10.04.2017</td>
-
-            <td class="task__controls">
-            </td>
-        </tr>
-    <?php endif; ?>
 </table>

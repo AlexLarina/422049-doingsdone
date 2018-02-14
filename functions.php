@@ -1,5 +1,4 @@
 <?php
-$show_complete_tasks = rand(0, 1);
 
 function count_in_category($tasks, $category) {
     $task_in_category = 0;
@@ -27,4 +26,5 @@ function include_template($path, $data){
 
     return $html_content;
 };
+
 ?>
