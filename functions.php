@@ -36,4 +36,14 @@ function filterByStatus($data){
     }
     return $undone_tasks;
 };
+
+function calcDays($task_date){
+    $current_date_stamp = time();
+    $task_date_stamp = strtotime($task_date);
+    $seconds_in_day = 86400;
+    $days = floor(($task_date_stamp - $current_date_stamp) / $seconds_in_day);
+
+    return $days;
+}
+
 ?>
