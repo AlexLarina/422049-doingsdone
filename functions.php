@@ -29,7 +29,6 @@ function include_template($path, $data){
 
 function filterByStatus($data){
     $undone_tasks = [];
-    $count = 0;
     foreach ($data as $key => $value){
         if($value['status'] == false){
             $undone_tasks[$key] = $value;
