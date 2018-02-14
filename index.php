@@ -3,7 +3,7 @@
     require_once('data.php');
     $show_complete_tasks = rand(0, 1);
 
-    if($show_complete_tasks == 1) {
+    if($show_complete_tasks) {
         $task_list = filterByStatus($task_list);
     }
 

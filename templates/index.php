@@ -27,7 +27,7 @@
     <!--показывать следующий тег <tr/>, если переменная $show_complete_tasks равна единице-->
     <?php
     foreach ($task_list as $value): ?>
-            <tr class="tasks__item task <? if($value['status']) : print("task--completed"); endif; ?>">
+            <tr class="tasks__item task <? if($value['status']) { print("task--completed"); } ?>">
                 <td class="task__select">
                     <label class="checkbox task__checkbox">
                         <input class="checkbox__input visually-hidden" type="checkbox">
