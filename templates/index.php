@@ -26,12 +26,6 @@
 <table class="tasks">
     <!--показывать следующий тег <tr/>, если переменная $show_complete_tasks равна единице-->
     <?php
-    $displayed_array = [];
-    if($show_complete_tasks == 0) {
-        $displayed_array = $task_list;
-    } else {
-        $displayed_array = filterByStatus($task_list);
-    }
     foreach ($displayed_array as $value): ?>
             <tr class="tasks__item task <? if($value['status']) : print("task--completed"); endif; ?>">
                 <td class="task__select">
@@ -43,20 +37,5 @@
                 <td class="task__date"><?=htmlspecialchars($value['date'])?></td>
                 <td class="task__controls"><?=$value['category']?></td>
             </tr>
-    <? endforeach;
-    /*foreach ($task_list as $value): ?>
-        <? if (!($value['status'] and $show_complete_tasks == 0)): ?>
-        <tr class="tasks__item task <? if($value['status']) : print("task--completed"); endif; ?>">
-            <td class="task__select">
-                <label class="checkbox task__checkbox">
-                    <input class="checkbox__input visually-hidden" type="checkbox">
-                    <a href="/"><span class="checkbox__text"><?=htmlspecialchars($value['task'])?></span></a>
-                </label>
-            </td>
-            <td class="task__date"><?=htmlspecialchars($value['date'])?></td>
-            <td class="task__controls"><?=$value['category']?></td>
-        </tr>
-    <? endif; ?>
-    <? endforeach; */
-    ?>
+    <? endforeach; ?>
 </table>
