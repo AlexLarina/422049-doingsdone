@@ -6,6 +6,8 @@
     $page_content = include_template('templates/index.php', ['task_list' => $task_list, 'show_complete_tasks' => $show_complete_tasks]);
     $layout_content = include_template('templates/layout.php', ['content' => $page_content, 'title' => 'Дела в порядке', 'task_list' => $task_list, 'projects' => $projects]);
 
+    //print_r(filterByStatus($task_list));
+
     print($layout_content);
 
 ?>

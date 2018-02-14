@@ -27,4 +27,14 @@ function include_template($path, $data){
     return $html_content;
 };
 
+function filterByStatus($data){
+    $undone_tasks = [];
+    $count = 0;
+    foreach ($data as $key => $value){
+        if($value['status'] == false){
+            $undone_tasks[$key] = $value;
+        }
+    }
+    return $undone_tasks;
+};
 ?>
