@@ -37,6 +37,20 @@ function filterByStatus($data){
     return $undone_tasks;
 };
 
+function filterByCategory($data, $project){
+    $current_category_tasks = [];
+    if($project == 'Все') {
+        $current_category_tasks = $data;
+    } else {
+        foreach ($data as $key => $value) {
+            if ($value['category'] == $project) {
+                $current_category_tasks[$key] = $value;
+            }
+        }
+    }
+    return $current_category_tasks;
+};
+
 function calcDays($task_date){
     $current_date_stamp = time();
     $task_date_stamp = strtotime($task_date);
