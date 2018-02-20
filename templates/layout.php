@@ -44,7 +44,7 @@
                         <?php
                         foreach ($projects as $key => $value) : ?>
                             <li class="main-navigation__list-item <? if($key == 0): print('main-navigation__list-item--active'); endif; ?> ">
-                                <a class="main-navigation__list-item-link" href=" <?php if ($key === 0):?>/<?php else: ?>index.php?id=<?=$key;?><?php endif;?>"><?=$value ?></a>
+                                <a class="main-navigation__list-item-link" href="index.php?id=<?=$key;?>"><?=$value ?></a>
                                 <span class="main-navigation__list-item-count"><?=count_in_category($task_list, $value)?></span>
                             </li>
                         <? endforeach; ?>
