@@ -15,7 +15,7 @@
         }
         else {
             http_response_code(404);
-            die('Unable to connect');
+            die();
         }
     }
 
