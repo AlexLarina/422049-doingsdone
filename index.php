@@ -7,15 +7,16 @@
         $task_list = filterByStatus($task_list);
     }
 
+    $tasks_in_category = [];
     if(isset($_GET['id'])) {
         $id = $_GET['id'];
-        $task_list = filterByCategory($task_list, $projects[$id]);
+        $tasks_in_category = filterByCategory($task_list, $projects[$id]);
+        //$task_list = filterByCategory($task_list, $projects[$id]);
     }  else {
-        //http_response_code(404);
-        //die();
+        http_response_code(404);
     }
 
-    $page_content = include_template('templates/index.php', ['task_list' => $task_list, 'show_complete_tasks' => $show_complete_tasks]);
+    $page_content = include_template('templates/index.php', ['task_list' => $tasks_in_category, 'show_complete_tasks' => $show_complete_tasks]);
     $layout_content = include_template('templates/layout.php', ['content' => $page_content, 'title' => 'Дела в порядке', 'task_list' => $task_list, 'projects' => $projects]);
 
     print($layout_content);
