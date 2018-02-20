@@ -30,7 +30,7 @@
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $new_task = $_POST;
 
-        $required = ['name', 'project'];
+        $required = ['task', 'category'];
         $dict = ['name' => 'Название', 'project' => 'Проект'];
         $errors = [];
         foreach ($required as $key) {
@@ -48,7 +48,11 @@
 
         if (count($errors)) {
             $body_class = 'overlay';
-            $form_content = include_template('templates/form.php', ['errors' => $errors, 'new_task' => $new_task, 'body_class' => $body_class,'projects' => $projects]);
+            $form_content = include_template('templates/form.php', [
+                'errors' => $errors,
+                'new_task' => $new_task,
+                'body_class' => $body_class,
+                'projects' => $projects]);
             //require_once('templates/form.php');
             //$page_content = include_template('templates/form.php', ['new_task' => $new_task, 'errors' => $errors, 'dict' => $dict]);
         } else {
