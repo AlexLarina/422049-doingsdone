@@ -1,3 +1,7 @@
+<?
+$classname = '';
+$err_message = '';
+?>
 <div class="modal">
     <button class="modal__close" type="button" name="button">Закрыть</button>
 
@@ -5,16 +9,35 @@
 
     <form class="form"  action="index.php" method="post">
         <div class="form__row">
+
+            <?php if (isset($errors['name'])) {
+                $classname = 'form__input--error';
+                $err_message = '<p class="form_message">Заполните это поле</p>';
+            } ?>
+            <?=$err_message;?>
+
             <label class="form__label" for="name">Название <sup>*</sup></label>
 
-            <input class="form__input" type="text" name="name" id="name" value="" placeholder="Введите название">
+            <input class="form__input <?=$classname?>" type="text" name="name" id="name" value="<?=(isset($new_task['name'])) ? $new_task['name'] : '';?>" placeholder="Введите название">
         </div>
 
         <div class="form__row">
+            <?php if (isset($errors['project'])) {
+                $classname = 'form__input--error';
+                $err_message = '<p class="form_message">Заполните это поле</p>';
+            } ?>
+            <?=$err_message;?>
+
             <label class="form__label" for="project">Проект <sup>*</sup></label>
 
-            <select class="form__input form__input--select" name="project" id="project">
-                <option value="">Входящие</option>
+            <select class="form__input form__input--select <?=$classname?>" name="project" id="project">
+                <!--<option value="">Входящие</option>-->
+                <?php foreach ($projects as $key): ?>
+                    <?php if ($key !== 'Все'): ?>
+                        <option value="<?=$key;?>">
+                    <?php endif; ?>
+                    <?=$key;?></option>
+                <?php endforeach; ?>
             </select>
         </div>
 
