@@ -6,10 +6,10 @@ $err_message = '';
     <button class="modal__close" type="button" name="button">Закрыть</button>
 
     <h2 class="modal__heading">Добавление задачи</h2>
-    <?foreach ($projects as $key => $value):
-        if($new_task['category'] == $value):?>
-    <form class="form"  action="index.php?id="<?=$key?> method="post">
-        <?endif; endforeach;?>
+    <?//foreach ($projects as $key => $value):
+        //if($new_task['category'] == $value):?>
+    <form class="form" action="index.php" method="post">
+        <?//endif; endforeach;?>
         <div class="form__row">
             <?php if (isset($errors['task'])) {
                 $classname = 'form__input--error';
