@@ -1,7 +1,7 @@
 # Личный проект «Дела в Порядке»
 
 * Студент: [Александра Ларина](https://up.htmlacademy.ru/php/4/user/422049).
-* Наставник: [Денис Байдаров] (https://htmlacademy.ru/profile/4er).
+* Наставник: [Денис Байдаров](https://htmlacademy.ru/profile/4er).
 
 ---
 

@@ -73,18 +73,8 @@
                 'body_class' => $body_class,
                 'projects' => $projects]);
         } else {
-            $new_task['status'] = 'false';
-            /*if(isset($new_task['date'])){
-                $current_date  = time();
-                if($current_date > strtotime($new_task['date'])) {
-                    //$new_task['date'] = date($current_date, 'd.m.Y');
-                }
-                print_r($current_date.' ');
-                print_r(strtotime(date($current_date)));
-                // $new_task['date'] = 'Нет';
-            } else {
-                $new_task['date'] = 'Нет';
-            }*/
+            $new_task['status'] = false;
+            print_r($new_task['status']);
             array_unshift($tasks_in_category, $new_task);
         }
     }
