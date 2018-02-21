@@ -20,6 +20,8 @@
             http_response_code(404);
             die();
         }
+    } else{
+        $tasks_in_category = $task_list;
     }
     if(isset($_GET['add'])) {
         $body_class = 'overlay';
@@ -51,9 +53,8 @@
             $errors['category'] = 'Выберите из предложенного';
         }
 
-        $current_date  = time();
-        if($current_date > strtotime($new_task['date'])) {
-            $new_task['date'] = date('d.m.Y', $current_date);
+        $current_date  = date('d.m.Y');
+        if($current_date > date('d.m.Y', strtotime($new_task['date']))) {
             $errors['date'] = 'Выберите дату не позже сегодняшней';
         }
 
@@ -96,7 +97,7 @@
     $layout_content = include_template('templates/layout.php', [
         'content' => $page_content,
         'title' => 'Дела в порядке',
-        'task_list' => $task_list,
+        'task_list' => $tasks_in_category,
         'projects' => $projects,
         'body_class' => $body_class,
         'form_content' => $form_content
