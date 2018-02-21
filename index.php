@@ -24,12 +24,10 @@
     if(isset($_GET['add'])) {
         $body_class = 'overlay';
         $form_content = include_template('templates/form.php', ['projects' => $projects]);
-        //require_once('templates/form.php');
     }
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $new_task = $_POST;
-
         $required = ['task', 'category'];
         $dict = ['name' => 'Название', 'project' => 'Проект'];
         $errors = [];
@@ -53,9 +51,19 @@
                 'new_task' => $new_task,
                 'body_class' => $body_class,
                 'projects' => $projects]);
-            //require_once('templates/form.php');
-            //$page_content = include_template('templates/form.php', ['new_task' => $new_task, 'errors' => $errors, 'dict' => $dict]);
         } else {
+            $new_task['status'] = 'false';
+            /*if(isset($new_task['date'])){
+                $current_date  = time();
+                if($current_date > strtotime($new_task['date'])) {
+                    //$new_task['date'] = date($current_date, 'd.m.Y');
+                }
+                print_r($current_date.' ');
+                print_r(strtotime(date($current_date)));
+                // $new_task['date'] = 'Нет';
+            } else {
+                $new_task['date'] = 'Нет';
+            }*/
             array_unshift($tasks_in_category, $new_task);
         }
     }

@@ -31,7 +31,6 @@ $err_message = '';
             <label class="form__label" for="project">Проект <sup>*</sup></label>
 
             <select class="form__input form__input--select <?=$classname?>" name="category" id="project">
-                <!--<option value="">Входящие</option>-->
                 <?php foreach ($projects as $key): ?>
                     <?php if ($key !== 'Все'): ?>
                         <option value="<?=$key;?>">
@@ -43,8 +42,16 @@ $err_message = '';
 
         <div class="form__row">
             <label class="form__label" for="date">Дата выполнения</label>
-
-            <input class="form__input form__input--date" type="date" name="date" id="date" value="<?=(isset($new_task['date'])) ? $new_task['date'] : '';?>" placeholder="Введите дату в формате ДД.ММ.ГГГГ">
+            <input class="form__input form__input--date" type="date" name="date" id="date" value="
+            <?if(isset($new_task['date'])){
+                $current_date  = time();
+                if($current_date > strtotime($new_task['date'])) {
+                    $new_task['date'] = date('d.m.Y', $current_date);
+                }
+            } else {
+                $new_task['date'] = 'Нет';
+            }?>
+            <?=$new_task['date']?>" placeholder="Введите дату в формате ДД.ММ.ГГГГ">
         </div>
 
         <div class="form__row">
