@@ -6,13 +6,14 @@ $err_message = '';
     <button class="modal__close" type="button" name="button">Закрыть</button>
 
     <h2 class="modal__heading">Добавление задачи</h2>
-
-    <form class="form"  action="index.php" method="post">
+    <?foreach ($projects as $key => $value):
+        if($new_task['category'] == $value):?>
+    <form class="form"  action="index.php?id="<?=$key?> method="post">
+        <?endif; endforeach;?>
         <div class="form__row">
-
             <?php if (isset($errors['task'])) {
                 $classname = 'form__input--error';
-                $err_message = '<p class="form_message">Заполните это поле</p>';
+                $err_message = '<p class="form_message">'.$errors['task'].'</p>';
             } ?>
             <?=$err_message;?>
 
@@ -24,7 +25,7 @@ $err_message = '';
         <div class="form__row">
             <?php if (isset($errors['category'])) {
                 $classname = 'form__input--error';
-                $err_message = '<p class="form_message">Заполните это поле</p>';
+                $err_message = '<p class="form_message">'.$errors['category'].'</p>';
             } ?>
             <?=$err_message;?>
 
@@ -33,7 +34,8 @@ $err_message = '';
             <select class="form__input form__input--select <?=$classname?>" name="category" id="project">
                 <?php foreach ($projects as $key): ?>
                     <?php if ($key !== 'Все'): ?>
-                        <option value="<?=$key;?>">
+                        <option <?if ($key == 'Входящие') : ?><?='selected'?><?endif;?>
+                        value="<?=$key;?>">
                     <?php endif; ?>
                     <?=$key;?></option>
                 <?php endforeach; ?>
@@ -41,14 +43,15 @@ $err_message = '';
         </div>
 
         <div class="form__row">
+            <?php if (isset($errors['date'])) {
+                $classname = 'form__input--error';
+                $err_message = '<p class="form_message">'.$errors['date'].'</p>';
+            } ?>
+            <?=$err_message;?>
+
             <label class="form__label" for="date">Дата выполнения</label>
-            <input class="form__input form__input--date" type="date" name="date" id="date" value="
-            <?if(isset($new_task['date'])){
-                $current_date  = time();
-                if($current_date > strtotime($new_task['date'])) {
-                    $new_task['date'] = date('d.m.Y', $current_date);
-                }
-            } else {
+            <input class="form__input form__input--date <?=$classname?>" type="date" name="date" id="date" value="
+            <?if(!isset($new_task['date'])){
                 $new_task['date'] = 'Нет';
             }?>
             <?=$new_task['date']?>" placeholder="Введите дату в формате ДД.ММ.ГГГГ">

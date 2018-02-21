@@ -28,13 +28,33 @@
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $new_task = $_POST;
-        $required = ['task', 'category'];
+        //$required = ['task', 'category'];
         $dict = ['name' => 'Название', 'project' => 'Проект'];
         $errors = [];
-        foreach ($required as $key) {
+        /*foreach ($required as $key) {
             if (empty($_POST[$key])) {
                 $errors[$key] = 'Это поле надо заполнить';
             }
+        }*/
+
+        if (empty($_POST['task'])) {
+            $errors['task'] = 'Это поле надо заполнить';
+        }
+
+        /*foreach ($projects as $key) {
+            if($key != $_POST['category']) {
+                $errors['category'] = 'Выберите из предложенного';
+            }
+        }*/
+
+        if(!in_array($_POST['category'], $projects)) {
+            $errors['category'] = 'Выберите из предложенного';
+        }
+
+        $current_date  = time();
+        if($current_date > strtotime($new_task['date'])) {
+            $new_task['date'] = date('d.m.Y', $current_date);
+            $errors['date'] = 'Выберите дату не позже сегодняшней';
         }
 
         if (isset($_FILES['preview']['name'])) {
