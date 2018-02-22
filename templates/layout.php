@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body><!--class="overlay"-->
+<body class="<?=$body_class;?>"><!--class="overlay"-->
 <h1 class="visually-hidden">Дела в порядке</h1>
 
 <div class="page-wrapper">
@@ -19,7 +19,7 @@
             </a>
 
             <div class="main-header__side">
-                <a class="main-header__side-item button button--plus" href="#">Добавить задачу</a>
+                <a class="main-header__side-item button button--plus" href="index.php?add">Добавить задачу</a>
 
                 <div class="main-header__side-item user-menu">
                     <div class="user-menu__image">
@@ -44,7 +44,7 @@
                         <?php
                         foreach ($projects as $key => $value) : ?>
                             <li class="main-navigation__list-item <? if($key == 0): print('main-navigation__list-item--active'); endif; ?> ">
-                                <a class="main-navigation__list-item-link" href="index.php?id=<?=$key;?>"><?=$value ?></a>
+                                <a class="main-navigation__list-item-link" href="index.php<?if($value == 'Все'):?><?=''?><?else: ?><?='?id='.$key;?><? endif;?>"><?=$value ?></a>
                                 <span class="main-navigation__list-item-count"><?=count_in_category($task_list, $value)?></span>
                             </li>
                         <? endforeach; ?>
@@ -54,7 +54,10 @@
                 <a class="button button--transparent button--plus content__side-button" href="#">Добавить проект</a>
             </section>
 
-            <main class="content__main"><?=$content?></main>
+            <main class="content__main">
+                <?=$content;?>
+                <?=$form_content;?>
+            </main>
         </div>
     </div>
 </div>
