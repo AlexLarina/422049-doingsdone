@@ -1,13 +1,10 @@
 <?php
     require_once('functions.php');
     require_once('data.php');
-    $show_complete_tasks = rand(0, 1);
+    //$show_complete_tasks = rand(0, 1);
+    $show_complete_tasks = 0;
     $body_class = '';
     $form_content = null;
-
-    if($show_complete_tasks) {
-        $task_list = filterByStatus($task_list);
-    }
 
     $tasks_in_category = [];
 
@@ -21,33 +18,36 @@
             die();
         }
     } else{
-        $tasks_in_category = $task_list;
+        //$tasks_in_category = $task_list;
+        $tasks_in_category = filterByStatus($task_list);
     }
+
     if(isset($_GET['add'])) {
         $body_class = 'overlay';
         $form_content = include_template('templates/form.php', ['projects' => $projects]);
     }
 
+    $cookie_value = 1;
+    if (isset($_GET['show_completed'])) {
+        if (isset($_COOKIE['showcompl'])) {
+            $cookie_value = toggle_value($_COOKIE['showcompl']);
+        }
+        setcookie('showcompl', $cookie_value, strtotime("+30 days"), "/");
+        header('Location: /');
+    }
+    if (isset($_COOKIE['showcompl'])) {
+        $show_complete_tasks = $_COOKIE['showcompl'];
+        $tasks_in_category = ($_COOKIE['showcompl'] ? $task_list : filterByStatus($task_list));
+    }
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $new_task = $_POST;
-        //$required = ['task', 'category'];
         $dict = ['name' => 'Название', 'project' => 'Проект'];
         $errors = [];
-        /*foreach ($required as $key) {
-            if (empty($_POST[$key])) {
-                $errors[$key] = 'Это поле надо заполнить';
-            }
-        }*/
 
         if (empty($_POST['task'])) {
             $errors['task'] = 'Это поле надо заполнить';
         }
-
-        /*foreach ($projects as $key) {
-            if($key != $_POST['category']) {
-                $errors['category'] = 'Выберите из предложенного';
-            }
-        }*/
 
         if(!in_array($_POST['category'], $projects)) {
             $errors['category'] = 'Выберите из предложенного';
