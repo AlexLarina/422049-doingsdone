@@ -10,7 +10,9 @@
     $errors = [];
     $classname = '';
     $err_message = '';
+    $username = '';
     $authorization = null;
+    $guest = null;
 
     $tasks_in_category = [];
 
@@ -19,10 +21,10 @@
         $session = $_SESSION['user'];
         $username = $_SESSION['user']['name'];
     } else {
+        $guest = include_template('templates/guest.php', []);
         if (isset($_GET['login'])) {
-            //print_r('login');
             $body_class = 'overlay';
-            $guest = include_template('templates/guest.php', []);
+            //$guest = include_template('templates/guest.php', []);
             $auth_form = include_template('templates/auth_form.php', [
                 'errors' => $errors,
                 'classname' => $classname,
@@ -30,8 +32,7 @@
                 'authorization' => $authorization
             ]);
         } else {
-            //$body_background = 'body-background';
-            $guest = include_template('templates/guest.php', []);
+            //$guest = include_template('templates/guest.php', []);
         }
     }
 
@@ -66,6 +67,11 @@
                 'err_message' => $err_message,
                 'authorization' => $authorization]);
         }
+    }
+
+    if (isset($_GET['logout'])) {
+        unset($_SESSION['user']);
+        header('Location: /index.php');
     }
 
     if(isset($_GET['id'])) {
@@ -153,7 +159,8 @@
         'form_content' => $form_content,
         'guest' => $guest,
         'session' => $session,
-        'auth_form' => $auth_form
+        'auth_form' => $auth_form,
+        'username' => $username
     ]);
 
     print($layout_content);

@@ -43,7 +43,7 @@
                     <div class="user-menu__data">
                         <p><?=$username;?></p>
 
-                        <a href="#">Выйти</a>
+                        <a href="index.php?logout">Выйти</a>
                     </div>
                 </div>
             </div>
