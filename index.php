@@ -7,11 +7,7 @@
     $form_content = null;
     $session = null;
     $auth_form = null;
-    $errors = [];
-    $classname = '';
-    $err_message = '';
     $username = '';
-    $authorization = null;
     $guest = null;
 
     $tasks_in_category = [];
@@ -24,12 +20,11 @@
         $guest = include_template('templates/guest.php', []);
         if (isset($_GET['login'])) {
             $body_class = 'overlay';
-            //$guest = include_template('templates/guest.php', []);
             $auth_form = include_template('templates/auth_form.php', [
-                'errors' => $errors,
-                'classname' => $classname,
-                'err_message' => $err_message,
-                'authorization' => $authorization
+                'errors' => [],
+                'classname' => '',
+                'err_message' => '',
+                'authorization' => ''
             ]);
         } else {
             //$guest = include_template('templates/guest.php', []);
@@ -62,10 +57,11 @@
         if (count($errors)) {
             $body_class = 'overlay';
             $auth_form = include_template('templates/auth_form.php', [
-                'errors' => $errors,
-                'classname' => $classname,
-                'err_message' => $err_message,
-                'authorization' => $authorization]);
+                'errors' => [],
+                'classname' => '',
+                'err_message' => '',
+                'authorization' => ''
+            ]);
         }
     }
 
@@ -84,7 +80,6 @@
             die();
         }
     } else{
-        //$tasks_in_category = $task_list;
         $tasks_in_category = filterByStatus($task_list);
     }
 
@@ -107,41 +102,42 @@
     }
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $new_task = $_POST;
-        //$dict = ['name' => 'Название', 'project' => 'Проект'];
-        $errors = [];
+        if(isset($_POST['task'])) {
+            $new_task = $_POST;
+            $errors = [];
 
-        if (empty($_POST['task'])) {
-            $errors['task'] = 'Это поле надо заполнить';
-        }
+            if (empty($_POST['task'])) {
+                $errors['task'] = 'Это поле надо заполнить';
+            }
 
-        if(!in_array($_POST['category'], $projects)) {
-            $errors['category'] = 'Выберите из предложенного';
-        }
+            if (!in_array($_POST['category'], $projects)) {
+                $errors['category'] = 'Выберите из предложенного';
+            }
 
-        $current_date  = date('d.m.Y');
-        if($current_date > date('d.m.Y', strtotime($new_task['date']))) {
-            $errors['date'] = 'Выберите дату не позже сегодняшней';
-        }
+            $current_date = date('d.m.Y');
+            if ($current_date > date('d.m.Y', strtotime($new_task['date']))) {
+                $errors['date'] = 'Выберите дату не позже сегодняшней';
+            }
 
-        if (isset($_FILES['preview']['name'])) {
-            $tmp_name = $_FILES['preview']['tmp_name'];
-            $path = $_FILES['preview']['name'];
-            move_uploaded_file($tmp_name, '' . $path);
-            $new_task['path'] = $path;
-        }
+            if (isset($_FILES['preview']['name'])) {
+                $tmp_name = $_FILES['preview']['tmp_name'];
+                $path = $_FILES['preview']['name'];
+                move_uploaded_file($tmp_name, '' . $path);
+                $new_task['path'] = $path;
+            }
 
-        if (count($errors)) {
-            $body_class = 'overlay';
-            $form_content = include_template('templates/form.php', [
-                'errors' => $errors,
-                'new_task' => $new_task,
-                'body_class' => $body_class,
-                'projects' => $projects]);
-        } else {
-            $new_task['status'] = false;
-            print_r($new_task['status']);
-            array_unshift($tasks_in_category, $new_task);
+            if (count($errors)) {
+                $body_class = 'overlay';
+                $form_content = include_template('templates/form.php', [
+                    'errors' => $errors,
+                    'new_task' => $new_task,
+                    'body_class' => $body_class,
+                    'projects' => $projects]);
+            } else {
+                $new_task['status'] = false;
+                print_r($new_task['status']);
+                array_unshift($tasks_in_category, $new_task);
+            }
         }
     }
 
