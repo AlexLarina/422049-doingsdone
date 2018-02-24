@@ -1,12 +1,72 @@
 <?php
     require_once('functions.php');
     require_once('data.php');
-    //$show_complete_tasks = rand(0, 1);
+    require_once('userdata.php');
     $show_complete_tasks = 0;
     $body_class = '';
     $form_content = null;
+    $session = null;
+    $auth_form = null;
+    $errors = [];
+    $classname = '';
+    $err_message = '';
+    $authorization = null;
 
     $tasks_in_category = [];
+
+    session_start();
+    if (isset($_SESSION['user'])) {
+        $session = $_SESSION['user'];
+        $username = $_SESSION['user']['name'];
+    } else {
+        if (isset($_GET['login'])) {
+            //print_r('login');
+            $body_class = 'overlay';
+            $guest = include_template('templates/guest.php', []);
+            $auth_form = include_template('templates/auth_form.php', [
+                'errors' => $errors,
+                'classname' => $classname,
+                'err_message' => $err_message,
+                'authorization' => $authorization
+            ]);
+        } else {
+            //$body_background = 'body-background';
+            $guest = include_template('templates/guest.php', []);
+        }
+    }
+
+    if (isset($_POST['email'])) {
+        $authorization = $_POST;
+        $required = ['email', 'password'];
+        $errors = [];
+        $user = searchUserByEmail($authorization['email'], $users);
+
+        foreach ($required as $value) {
+            if (empty($authorization[$value])) {
+                $errors[$value] = 'Это поле надо заполнить';
+            }
+            if (!empty($authorization['email']) && !$user) {
+                $errors['email'] = 'Пользователь не существует';
+                $errors['password'] = '';
+            }
+        }
+        if (!count($errors) && $user) {
+            if (password_verify($authorization['password'], $user['password'])) {
+                $_SESSION['user'] = $user;
+                header('Location: /index.php');
+            } else {
+                $errors['password'] = 'Неправильный пароль';
+            }
+        }
+        if (count($errors)) {
+            $body_class = 'overlay';
+            $auth_form = include_template('templates/auth_form.php', [
+                'errors' => $errors,
+                'classname' => $classname,
+                'err_message' => $err_message,
+                'authorization' => $authorization]);
+        }
+    }
 
     if(isset($_GET['id'])) {
         $id = $_GET['id'];
@@ -42,7 +102,7 @@
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $new_task = $_POST;
-        $dict = ['name' => 'Название', 'project' => 'Проект'];
+        //$dict = ['name' => 'Название', 'project' => 'Проект'];
         $errors = [];
 
         if (empty($_POST['task'])) {
@@ -90,7 +150,10 @@
         'task_list' => $tasks_in_category,
         'projects' => $projects,
         'body_class' => $body_class,
-        'form_content' => $form_content
+        'form_content' => $form_content,
+        'guest' => $guest,
+        'session' => $session,
+        'auth_form' => $auth_form
     ]);
 
     print($layout_content);
