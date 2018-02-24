@@ -59,5 +59,7 @@ function calcDays($task_date){
 
     return $days;
 }
-
+function toggle_value ($value) {
+    return $value = ($value ? 0 : 1);
+}
 ?>
