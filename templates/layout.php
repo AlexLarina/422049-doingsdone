@@ -12,6 +12,20 @@
 <h1 class="visually-hidden">Дела в порядке</h1>
 
 <div class="page-wrapper">
+    <?php if (!$session): ?>
+    <div class="container">
+        <header class="main-header">
+            <a href="#">
+                <img src="../img/logo.png" width="153" height="42" alt="Логитип Дела в порядке">
+            </a>
+
+            <div class="main-header__side">
+                <a class="main-header__side-item button button--transparent" href="index.php?login">Войти</a>
+            </div>
+        </header>
+        <?=$guest;?>
+        <?=$auth_form;?>
+    <?php else: ?>
     <div class="container container--with-sidebar">
         <header class="main-header">
             <a href="#">
@@ -27,9 +41,9 @@
                     </div>
 
                     <div class="user-menu__data">
-                        <p>Константин</p>
+                        <p><?=$username;?></p>
 
-                        <a href="#">Выйти</a>
+                        <a href="index.php?logout">Выйти</a>
                     </div>
                 </div>
             </div>
@@ -61,6 +75,7 @@
         </div>
     </div>
 </div>
+    <?php endif; ?>
 
 <footer class="main-footer">
     <div class="container">
@@ -70,7 +85,9 @@
             <p>Веб-приложение для удобного ведения списка дел.</p>
         </div>
 
-        <a class="main-footer__button button button--plus">Добавить задачу</a>
+        <?php if ($session): ?>
+            <a class="main-footer__button button button--plus" href="index.php?add">Добавить задачу</a>
+        <?php endif; ?>
 
         <div class="main-footer__social social">
             <span class="visually-hidden">Мы в соцсетях:</span>

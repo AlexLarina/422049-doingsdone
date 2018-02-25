@@ -62,4 +62,15 @@ function calcDays($task_date){
 function toggle_value ($value) {
     return $value = ($value ? 0 : 1);
 }
+function searchUserByEmail($email, $users) {
+    $result = null;
+    foreach ($users as $user) {
+        if ($user['email'] == $email) {
+            $result = $user;
+            break;
+        }
+    }
+
+    return $result;
+}
 ?>
