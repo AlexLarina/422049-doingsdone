@@ -73,4 +73,15 @@ function searchUserByEmail($email, $users) {
 
     return $result;
 }
+/*function searchUserByEmail($email, $users) {
+    $result = null;
+    foreach ($users as $user) {
+        if ($user == $email) {
+            $result = $user;
+            break;
+        }
+    }
+
+    return $result;
+}*/
 ?>

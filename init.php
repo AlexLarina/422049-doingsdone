@@ -17,4 +17,5 @@ if (!$db_link)
     print($page_content);
     exit();
 }
+
 ?>

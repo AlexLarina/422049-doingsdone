@@ -2,7 +2,7 @@
     require_once('functions.php');
     require_once('data.php');
     require_once('userdata.php');
-    require_once("init.php");
+    require_once('init.php');
 
     $show_complete_tasks = 0;
     $body_class = '';
@@ -32,11 +32,7 @@
         }
     }
 
-    if(isset($_GET['register'])){
-        header('Location: /register.php');
-    }
-
-    if(isset($_POST['signup'])){
+    /*if(isset($_POST['signup'])){
         $signup = $_POST;
         $required = ['email', 'password', 'name'];
         $errors = [];
@@ -45,9 +41,20 @@
                 $errors[$value] = 'Это поле надо заполнить';
             }
         }
-    }
+        print_r('welcome');
+    }*/
 
-    if (isset($_POST['login'])) {
+    /*$sql = "SELECT email FROM users";
+    $result = mysqli_query($db_link, $sql);
+    $rows = mysqli_fetch_all($result);
+    $user_email = [];
+    foreach ($rows as $row){
+        array_unshift($user_email, $row[0]);
+        //print_r($row[0].', ');
+    }
+    //print_r($user_email);
+    print_r(searchUserByEmail('ignfrfat.v@gmail.com', $user_email));*/
+    if (isset($_POST['email'])) {
         $authorization = $_POST;
         $required = ['email', 'password'];
         $errors = [];
@@ -172,8 +179,7 @@
         'guest' => $guest,
         'session' => $session,
         'auth_form' => $auth_form,
-        'username' => $username,
-        'reg_form' => $reg_form
+        'username' => $username
     ]);
 
     print($layout_content);
