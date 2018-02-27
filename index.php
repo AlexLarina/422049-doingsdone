@@ -7,6 +7,7 @@
     $form_content = null;
     $session = null;
     $auth_form = null;
+    $reg_form = null;
     $username = '';
     $guest = null;
 
@@ -26,9 +27,11 @@
                 'err_message' => '',
                 'authorization' => ''
             ]);
-        } else {
-            //$guest = include_template('templates/guest.php', []);
         }
+    }
+
+    if(isset($_GET['register'])){
+        header('Location: /register.php');
     }
 
     if (isset($_POST['email'])) {
@@ -156,7 +159,8 @@
         'guest' => $guest,
         'session' => $session,
         'auth_form' => $auth_form,
-        'username' => $username
+        'username' => $username,
+        'reg_form' => $reg_form
     ]);
 
     print($layout_content);
