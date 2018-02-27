@@ -2,6 +2,8 @@
     require_once('functions.php');
     require_once('data.php');
     require_once('userdata.php');
+    require_once("init.php");
+
     $show_complete_tasks = 0;
     $body_class = '';
     $form_content = null;
@@ -39,7 +41,7 @@
         $required = ['email', 'password', 'name'];
         $errors = [];
         foreach ($required as $value) {
-            if (empty($authorization[$value])) {
+            if (empty($signup[$value])) {
                 $errors[$value] = 'Это поле надо заполнить';
             }
         }
