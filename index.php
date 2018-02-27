@@ -34,7 +34,18 @@
         header('Location: /register.php');
     }
 
-    if (isset($_POST['email'])) {
+    if(isset($_POST['signup'])){
+        $signup = $_POST;
+        $required = ['email', 'password', 'name'];
+        $errors = [];
+        foreach ($required as $value) {
+            if (empty($authorization[$value])) {
+                $errors[$value] = 'Это поле надо заполнить';
+            }
+        }
+    }
+
+    if (isset($_POST['login'])) {
         $authorization = $_POST;
         $required = ['email', 'password'];
         $errors = [];
