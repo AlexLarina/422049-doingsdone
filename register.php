@@ -32,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 'errors' => $errors,
                 'classname' => $classname,
                 'err_message' => $err_message,
+                'sign_up' => $sign_up
             ];
             //print_r('validation failed');
         } else {
