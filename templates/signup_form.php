@@ -18,7 +18,9 @@ $err_message = '';
 
         <input class="form__input <?=$classname;?>" type="text" name="email" id="email" value="<?=(isset($sign_up['email'])) ? $sign_up['email'] : '';?>" placeholder="Введите e-mail">
 
+        <? if (isset($errors['email'])) :?>
         <p class="form__message">E-mail введён некорректно</p>
+        <? endif; ?>
     </div>
 
     <div class="form__row">
@@ -50,8 +52,9 @@ $err_message = '';
     </div>
 
     <div class="form__row form__row--controls">
+        <?php if (isset($errors)): ?>
         <p class="error-message">Пожалуйста, исправьте ошибки в форме</p>
-
+        <? endif; ?>
         <input class="button" type="submit" name="signup" value="Зарегистрироваться">
     </div>
 </form>
