@@ -1,27 +1,43 @@
 <?
 require_once('functions.php');
 
+$signup_form = include_template('templates/signup_form.php', [
+   /*'errors' => [],
+    'classname' => '',
+    'err_message' => '',*/
+]);
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['signup'])) {
-        $signup = $_POST;
+        $sign_up = $_POST;
         $required = ['email', 'password', 'name'];
         $errors = [];
+        $classname = '';
+        $err_message = '';
+
         foreach ($required as $value) {
-            if (empty($signup[$value])) {
+            if (empty($sign_up[$value])) {
                 $errors[$value] = 'Это поле надо заполнить';
             }
         }
-        print_r('welcome');
+
+        if (count($errors)) {
+            $signup_form = include_template('templates/signup_form.php', [
+                'errors' => $errors,
+                'classname' => $classname,
+                'err_message' => $err_message,
+            ]);
+            print_r('validation failed');
+        } else {
+            print_r('validation completed');
+        }
     }
 }
 
-$reg_form = include_template('templates/register.php', [
-    'errors' => [],
-    'classname' => '',
-    'err_message' => '',
-    'signup' => '',
+$signup_page = include_template('templates/register.php', [
+    'signup_form' => $signup_form,
     'title' => 'Дела в порядке'
 ]);
-print($reg_form);
+print($signup_page);
 ?>
 

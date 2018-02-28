@@ -54,7 +54,7 @@
     }
     //print_r($user_email);
     print_r(searchUserByEmail('ignfrfat.v@gmail.com', $user_email));*/
-    if (isset($_POST['email'])) {
+    if (isset($_POST['signin'])) {
         $authorization = $_POST;
         $required = ['email', 'password'];
         $errors = [];
@@ -158,7 +158,7 @@
                     'projects' => $projects]);
             } else {
                 $new_task['status'] = false;
-                print_r($new_task['status']);
+                //print_r($new_task['status']);
                 array_unshift($tasks_in_category, $new_task);
             }
         }
