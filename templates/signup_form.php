@@ -48,7 +48,7 @@ $err_message = '';
         <?=$err_message;?>
         <label class="form__label" for="name">Имя <sup>*</sup></label>
 
-        <input class="form__input <?=$classname;?>" type="password" name="name" id="name" value="<?=(isset($sign_up['name'])) ? $sign_up['name'] : '';?>" placeholder="Введите пароль">
+        <input class="form__input <?=$classname;?>" type="text" name="name" id="name" value="<?=(isset($sign_up['name'])) ? $sign_up['name'] : '';?>" placeholder="Введите имя">
     </div>
 
     <div class="form__row form__row--controls">
