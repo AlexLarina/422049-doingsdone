@@ -14,7 +14,9 @@
 
             <input class="form__input <?=$classname;?>" type="text" name="email" id="email" value="<?=(isset($authorization['email'])) ? $authorization['email'] : '';?>" placeholder="Введите e-mail">
 
+            <? if (isset($errors['email'])) :?>
             <p class="form__message">E-mail введён некорректно</p>
+            <? endif; ?>
         </div>
 
         <div class="form__row">
@@ -29,7 +31,7 @@
         </div>
 
         <div class="form__row form__row--controls">
-            <input class="button" type="submit" name="" value="Войти">
+            <input class="button" type="submit" name="signin" value="Войти">
         </div>
     </form>
 </div>

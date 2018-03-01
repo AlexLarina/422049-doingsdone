@@ -73,4 +73,12 @@ function searchUserByEmail($email, $users) {
 
     return $result;
 }
+
+function searchUserByEmailInDB($link, $email) {
+    $sql = "SELECT * FROM users WHERE email = '".$email."'";
+    $result = mysqli_query($link, $sql);
+    $user = mysqli_fetch_assoc($result);
+
+    return $user;
+}
 ?>
