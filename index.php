@@ -32,21 +32,23 @@
             $project_name = mysqli_fetch_assoc($project_DB_name);
 
             $date = '';
+            $status = '';
             if($DBtask['dt_deadline'] == null) {
                 $date = 'Нет';
             } else {
                 $date = date('d.m.Y', strtotime($DBtask['dt_deadline']));
+                $status = (strtotime($DBtask['dt_deadline']) < time()) ? true : false;
             }
 
             $task = [
                 'task' => $DBtask['name'],
                 'date' => $date,
                 'category' => $project_name['name'],
-                'status' => false,
+                'status' => $status,
             ];
             array_push($task_list, $task);
         }
-
+        //print_r($task_list);
         foreach ($projects_list as $proj){
             $projects_item = [
                 'DB_id' => $proj['id'],
@@ -118,14 +120,15 @@
             $task_in_category_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE project_id = '.$projects[$id]['DB_id']);
             $task_in_category_list = mysqli_fetch_all($task_in_category_result, MYSQLI_ASSOC);
 
-            $date = '';
-            if($DBtask['dt_deadline'] == null) {
-                $date = 'Нет';
-            } else {
-                $date = date('d.m.Y', strtotime($DBtask['dt_deadline']));
-            }
-
             foreach ($task_in_category_list as $DBtask){
+                $date = '';
+                if($DBtask['dt_deadline'] == null) {
+                    $date = 'Нет';
+                } else {
+                    $date = date('d.m.Y', strtotime($DBtask['dt_deadline']));
+                    $status = (strtotime($DBtask['dt_deadline']) < time()) ? true : false;
+                }
+
                 $item = [
                     'task' => $DBtask['name'],
                     'date' => $date,

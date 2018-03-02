@@ -37,9 +37,9 @@ function filterByStatus($data){
     return $undone_tasks;
 };
 
-/*function filterByCategory($data, $project){
+function filterByCategory($link, $project){
     $current_category_tasks = [];
-    if($project == 'Все') {
+    /*if($project == 'Все') {
         $current_category_tasks = $data;
     } else {
         foreach ($data as $key => $value) {
@@ -47,9 +47,28 @@ function filterByStatus($data){
                 $current_category_tasks[$key] = $value;
             }
         }
+    }*/
+    /*$task_in_category_result = mysqli_query($link, 'SELECT * FROM tasks WHERE project_id = '.$projects[$id]['DB_id']);
+    $task_in_category_list = mysqli_fetch_all($task_in_category_result, MYSQLI_ASSOC);
+
+    $date = '';
+    if($DBtask['dt_deadline'] == null) {
+        $date = 'Нет';
+    } else {
+        $date = date('d.m.Y', strtotime($DBtask['dt_deadline']));
     }
-    return $current_category_tasks;
-};*/
+
+    foreach ($task_in_category_list as $DBtask){
+        $item = [
+            'task' => $DBtask['name'],
+            'date' => $date,
+            'category' => $projects[$id]['name'],
+            'status' => false,
+        ];
+        array_push($tasks_in_category, $item);
+    }
+    return $current_category_tasks;*/
+};
 
 function calcDays($task_date){
     $current_date_stamp = time();
