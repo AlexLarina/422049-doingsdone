@@ -31,9 +31,16 @@
             $project_DB_name = mysqli_query($db_link, 'SELECT name FROM projects WHERE id = '.$DBtask['project_id']);
             $project_name = mysqli_fetch_assoc($project_DB_name);
 
+            $date = '';
+            if($DBtask['dt_deadline'] == null) {
+                $date = 'Нет';
+            } else {
+                $date = date('d.m.Y', strtotime($DBtask['dt_deadline']));
+            }
+
             $task = [
                 'task' => $DBtask['name'],
-                'date' => date('d.m.Y', strtotime($DBtask['dt_deadline'])),
+                'date' => $date,
                 'category' => $project_name['name'],
                 'status' => false,
             ];
@@ -88,7 +95,6 @@
         }
         if (count($errors)) {
             $body_class = 'overlay';
-            //print_r('validationa failed');
             $auth_form = include_template('templates/auth_form.php', [
                 'errors' => $errors,
                 'classname' => $classname,
