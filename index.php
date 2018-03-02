@@ -1,6 +1,5 @@
 <?php
     require_once('functions.php');
-    require_once('data.php');
     require_once('init.php');
 
     $show_complete_tasks = 0;
@@ -11,13 +10,40 @@
     $username = '';
     $guest = null;
 
+    $task_list = [];
+    $projects = [];
     $tasks_in_category = [];
 
     session_start();
 
     if (isset($_SESSION['user'])) {
         $session = $_SESSION['user'];
-        $username = $_SESSION['user']['name'];
+        $username = $session['name'];
+        $user_id = $session['id'];
+
+        $project_result = mysqli_query($db_link, 'SELECT * FROM projects WHERE user_id = '.$user_id);
+        $projects_list = mysqli_fetch_all($project_result, MYSQLI_ASSOC);
+
+        $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id);
+        $tasks = mysqli_fetch_all($task_result, MYSQLI_ASSOC);
+
+        foreach ($tasks as $DBtask){
+            $project_DB_name = mysqli_query($db_link, 'SELECT name FROM projects WHERE id = '.$DBtask['project_id']);
+            $project_name = mysqli_fetch_assoc($project_DB_name);
+
+            $task = [
+                'task' => $DBtask['name'],
+                'date' => date('d.m.Y', strtotime($DBtask['dt_deadline'])),
+                'category' => $project_name['name'],
+                'status' => false,
+            ];
+            array_push($task_list, $task);
+        }
+
+        foreach ($projects_list as $proj){
+            array_push($projects, $proj['name']);
+        }
+
     } else {
         $guest = include_template('templates/guest.php', []);
         if (isset($_GET['login'])) {
@@ -62,7 +88,7 @@
         }
         if (count($errors)) {
             $body_class = 'overlay';
-            print_r('validationa failed');
+            //print_r('validationa failed');
             $auth_form = include_template('templates/auth_form.php', [
                 'errors' => $errors,
                 'classname' => $classname,
