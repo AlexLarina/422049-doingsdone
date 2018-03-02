@@ -37,7 +37,7 @@ function filterByStatus($data){
     return $undone_tasks;
 };
 
-function filterByCategory($data, $project){
+/*function filterByCategory($data, $project){
     $current_category_tasks = [];
     if($project == 'Все') {
         $current_category_tasks = $data;
@@ -49,7 +49,7 @@ function filterByCategory($data, $project){
         }
     }
     return $current_category_tasks;
-};
+};*/
 
 function calcDays($task_date){
     $current_date_stamp = time();

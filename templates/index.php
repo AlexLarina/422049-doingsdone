@@ -36,7 +36,6 @@
                     </label>
                 </td>
                 <td class="task__date"><?=htmlspecialchars($value['date'])?></td>
-                <td class="task__controls"><?=$value['category']?></td>
             </tr>
     <? endforeach; ?>
 </table>

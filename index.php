@@ -48,9 +48,12 @@
         }
 
         foreach ($projects_list as $proj){
-            array_push($projects, $proj['name']);
+            $projects_item = [
+                'DB_id' => $proj['id'],
+                'name' => $proj['name']
+            ];
+            array_push($projects, $projects_item);
         }
-
     } else {
         $guest = include_template('templates/guest.php', []);
         if (isset($_GET['login'])) {
@@ -112,7 +115,27 @@
     if(isset($_GET['id'])) {
         $id = $_GET['id'];
         if(isset($projects[$id])) {
-            $tasks_in_category = filterByCategory($task_list, $projects[$id]);
+            $task_in_category_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE project_id = '.$projects[$id]['DB_id']);
+            $task_in_category_list = mysqli_fetch_all($task_in_category_result, MYSQLI_ASSOC);
+
+            $date = '';
+            if($DBtask['dt_deadline'] == null) {
+                $date = 'Нет';
+            } else {
+                $date = date('d.m.Y', strtotime($DBtask['dt_deadline']));
+            }
+
+            foreach ($task_in_category_list as $DBtask){
+                $item = [
+                    'task' => $DBtask['name'],
+                    'date' => $date,
+                    'category' => $projects[$id]['name'],
+                    'status' => false,
+                ];
+                array_push($tasks_in_category, $item);
+            }
+            print_r($tasks_in_category);
+            //$tasks_in_category = filterByCategory($task_list, $projects[$id]);
         }
         else {
             http_response_code(404);
