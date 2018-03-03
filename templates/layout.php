@@ -65,12 +65,13 @@
                     </ul>
                 </nav>
 
-                <a class="button button--transparent button--plus content__side-button" href="#">Добавить проект</a>
+                <a class="button button--transparent button--plus content__side-button" href="index.php?add_project">Добавить проект</a>
             </section>
 
             <main class="content__main">
                 <?=$content;?>
                 <?=$form_content;?>
+                <?=$project_form_content;?>
             </main>
         </div>
     </div>

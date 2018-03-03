@@ -1,17 +1,20 @@
 <?php
     require_once('functions.php');
     require_once('init.php');
+    require_once ('mysql_helper.php');
 
     $show_complete_tasks = 0;
     $body_class = '';
     $form_content = null;
     $session = null;
     $auth_form = null;
+    $project_form_content = null;
     $username = '';
     $guest = null;
 
     $task_list = [];
     $projects = [];
+    $project_names = [];
     $tasks_in_category = [];
 
     session_start();
@@ -48,13 +51,13 @@
             ];
             array_push($task_list, $task);
         }
-        //print_r($task_list);
         foreach ($projects_list as $proj){
             $projects_item = [
                 'DB_id' => $proj['id'],
                 'name' => $proj['name']
             ];
             array_push($projects, $projects_item);
+            array_push($project_names, $proj['name']);
         }
     } else {
         $guest = include_template('templates/guest.php', []);
@@ -121,6 +124,9 @@
             $task_in_category_list = mysqli_fetch_all($task_in_category_result, MYSQLI_ASSOC);
 
             foreach ($task_in_category_list as $DBtask){
+
+                //print_r($DBtask);
+
                 $date = '';
                 if($DBtask['dt_deadline'] == null) {
                     $date = 'Нет';
@@ -133,7 +139,8 @@
                     'task' => $DBtask['name'],
                     'date' => $date,
                     'category' => $projects[$id]['name'],
-                    'status' => false,
+                    'status' => $status,
+                    'task_id' => $DBtask['id']
                 ];
                 array_push($tasks_in_category, $item);
             }
@@ -153,6 +160,11 @@
         $form_content = include_template('templates/form.php', ['projects' => $projects]);
     }
 
+    if(isset($_GET['add_project'])) {
+        $body_class = 'overlay';
+        $project_form_content = include_template('templates/add_project_form.php', []);
+    }
+
     $cookie_value = 1;
     if (isset($_GET['show_completed'])) {
         if (isset($_COOKIE['showcompl'])) {
@@ -166,6 +178,33 @@
         $tasks_in_category = ($_COOKIE['showcompl'] ? $task_list : filterByStatus($task_list));
     }
 
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_project'])) {
+        $new_project = $_POST;
+        $errors = [];
+
+        if (empty($_POST['name'])) {
+            $errors['name'] = 'Это поле надо заполнить';
+        }
+
+        if (count($errors)) {
+            $body_class = 'overlay';
+            $project_form_content = include_template('templates/add_project_form.php', [
+                'errors' => $errors,
+                'new_project' => $new_project
+                ]);
+        } else {
+            $sql = 'INSERT INTO projects (name, user_id) VALUES(?, ?)';
+            $stmt = db_get_prepare_stmt($db_link, $sql, [$new_project['name'], $_SESSION['user']['id']]);
+            $result = mysqli_stmt_execute($stmt);
+            if($result){
+                header('Location: index.php');
+            } else {
+                echo mysqli_error($db_link);
+                exit();
+            }
+        }
+    }
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['task'])) {
         $new_task = $_POST;
         $errors = [];
@@ -174,7 +213,7 @@
             $errors['task'] = 'Это поле надо заполнить';
         }
 
-        if (!in_array($_POST['category'], $projects)) {
+        if (!in_array($_POST['category'], $project_names)) {
             $errors['category'] = 'Выберите из предложенного';
         }
 
@@ -198,8 +237,28 @@
                 'body_class' => $body_class,
                 'projects' => $projects]);
         } else {
-            $new_task['status'] = false;
-            array_unshift($tasks_in_category, $new_task);
+            //$new_task['status'] = false;
+            //array_unshift($tasks_in_category, $new_task);
+
+            $key = array_search($new_task['category'], $project_names);
+            $sql = 'INSERT INTO tasks (dt_add, name, file_path, dt_deadline, user_id, project_id)
+                    VALUES(NOW(), ?, ?, ?, ?, ?)';
+
+            $stmt = db_get_prepare_stmt($db_link, $sql, [
+                $new_task['task'],
+                $new_task['preview'],
+                date('Y-m-d', strtotime($new_task['date'])),
+                $_SESSION['user']['id'],
+                $projects[$key]['DB_id']
+            ]);
+            $result = mysqli_stmt_execute($stmt);
+            if($result){
+                header('Location: index.php');
+            } else {
+                echo mysqli_error($db_link);
+                exit();
+            }
+
         }
     }
 
@@ -215,6 +274,7 @@
         'projects' => $projects,
         'body_class' => $body_class,
         'form_content' => $form_content,
+        'project_form_content' => $project_form_content,
         'guest' => $guest,
         'session' => $session,
         'auth_form' => $auth_form,

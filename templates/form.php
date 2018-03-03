@@ -35,12 +35,12 @@ $err_message = '';
             <label class="form__label" for="project">Проект <sup>*</sup></label>
 
             <select class="form__input form__input--select <?=$classname?>" name="category" id="project">
-                <?php foreach ($projects as $key): ?>
-                    <?php if ($key !== 'Все'): ?>
-                        <option <?if ($key == 'Входящие') : ?><?='selected'?><?endif;?>
-                        value="<?=$key;?>">
+                <?php foreach ($projects as $key => $value): ?>
+                    <?php if ($value['name'] !== 'Все'): ?>
+                        <option <?if ($value['name'] == 'Входящие') : ?><?='selected'?><?endif;?>
+                        value="<?=$value['name'];?>">
                     <?php endif; ?>
-                    <?=$key;?></option>
+                    <?=$value['name'];?></option>
                 <?php endforeach; ?>
             </select>
         </div>
