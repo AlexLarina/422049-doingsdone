@@ -57,20 +57,21 @@
                     <ul class="main-navigation__list">
                         <?php
                         foreach ($projects as $key => $value) : ?>
-                            <li class="main-navigation__list-item <? if($key == 0): print('main-navigation__list-item--active'); endif; ?> ">
-                                <a class="main-navigation__list-item-link" href="index.php<?if($value == 'Все'):?><?=''?><?else: ?><?='?id='.$key;?><? endif;?>"><?=$value ?></a>
-                                <span class="main-navigation__list-item-count"><?=count_in_category($task_list, $value)?></span>
+                            <li class="main-navigation__list-item <? if($id == $key): print('main-navigation__list-item--active'); endif; ?> ">
+                                <a class="main-navigation__list-item-link" href="index.php<?if($value['name'] == 'Все'):?><?=''?><?else: ?><?='?id='.$key;?><? endif;?>"><?=htmlspecialchars($value['name'])?></a>
+                                <span class="main-navigation__list-item-count"><?=count_in_category($task_list, $value['name'])?></span>
                             </li>
                         <? endforeach; ?>
                     </ul>
                 </nav>
 
-                <a class="button button--transparent button--plus content__side-button" href="#">Добавить проект</a>
+                <a class="button button--transparent button--plus content__side-button" href="index.php?add_project">Добавить проект</a>
             </section>
 
             <main class="content__main">
                 <?=$content;?>
                 <?=$form_content;?>
+                <?=$project_form_content;?>
             </main>
         </div>
     </div>
