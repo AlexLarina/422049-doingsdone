@@ -37,39 +37,6 @@ function filterByStatus($data){
     return $undone_tasks;
 };
 
-function filterByCategory($link, $project){
-    $current_category_tasks = [];
-    /*if($project == 'Все') {
-        $current_category_tasks = $data;
-    } else {
-        foreach ($data as $key => $value) {
-            if ($value['category'] == $project) {
-                $current_category_tasks[$key] = $value;
-            }
-        }
-    }*/
-    /*$task_in_category_result = mysqli_query($link, 'SELECT * FROM tasks WHERE project_id = '.$projects[$id]['DB_id']);
-    $task_in_category_list = mysqli_fetch_all($task_in_category_result, MYSQLI_ASSOC);
-
-    $date = '';
-    if($DBtask['dt_deadline'] == null) {
-        $date = 'Нет';
-    } else {
-        $date = date('d.m.Y', strtotime($DBtask['dt_deadline']));
-    }
-
-    foreach ($task_in_category_list as $DBtask){
-        $item = [
-            'task' => $DBtask['name'],
-            'date' => $date,
-            'category' => $projects[$id]['name'],
-            'status' => false,
-        ];
-        array_push($tasks_in_category, $item);
-    }
-    return $current_category_tasks;*/
-};
-
 function calcDays($task_date){
     $current_date_stamp = time();
     $task_date_stamp = strtotime($task_date);
@@ -99,5 +66,34 @@ function searchUserByEmailInDB($link, $email) {
     $user = mysqli_fetch_assoc($result);
 
     return $user;
+}
+
+function renderTasks ($link, $sql_result) {
+    $DB_tasks = mysqli_fetch_all($sql_result, MYSQLI_ASSOC);
+    $tasks = [];
+    foreach ($DB_tasks as $DBtask){
+        $project_DB_name = mysqli_query($link, 'SELECT name FROM projects WHERE id = '.$DBtask['project_id']);
+        $project_name = mysqli_fetch_assoc($project_DB_name);
+
+        $date = '';
+        $status = '';
+        if($DBtask['dt_deadline'] == null) {
+            $date = 'Нет';
+        } else {
+            $date = date('d.m.Y', strtotime($DBtask['dt_deadline']));
+            $status = (strtotime($DBtask['dt_deadline']) < time()) ? true : false;
+        }
+
+        $task = [
+            'task' => $DBtask['name'],
+            'date' => $date,
+            'category' => $project_name['name'],
+            'status' => $status,
+            'task_id' => $DBtask['id']
+        ];
+        array_push($tasks, $task);
+    }
+
+    return $tasks;
 }
 ?>
