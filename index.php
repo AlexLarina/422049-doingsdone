@@ -16,6 +16,7 @@
     $projects = [];
     $project_names = [];
     $tasks_in_category = [];
+    $id = '';
 
     session_start();
 
@@ -262,7 +263,8 @@
         'guest' => $guest,
         'session' => $session,
         'auth_form' => $auth_form,
-        'username' => $username
+        'username' => $username,
+        'id' => $id
     ]);
 
     print($layout_content);
