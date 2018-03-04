@@ -27,7 +27,7 @@
     <!--показывать следующий тег <tr/>, если переменная $show_complete_tasks равна единице-->
     <?php
     foreach ($task_list as $value): ?>
-            <tr class="tasks__item task <? if($value['status']) { print("task--completed"); } ?>
+            <tr class="tasks__item task <? if($value['done']) { print("task--completed"); } ?>
             <? if(calcDays($value['date']) <= 1){ print("task--important"); } ?>">
                 <td class="task__select">
                     <label class="checkbox task__checkbox">

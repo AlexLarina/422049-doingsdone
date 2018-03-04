@@ -89,7 +89,8 @@ function renderTasks ($link, $sql_result) {
             'date' => $date,
             'category' => $project_name['name'],
             'status' => $status,
-            'task_id' => $DBtask['id']
+            'task_id' => $DBtask['id'],
+            'done' => $DBtask['dt_done']
         ];
         array_push($tasks, $task);
     }
