@@ -1,6 +1,6 @@
 <?php
 
-function count_in_category($tasks, $category) {
+ /*function count_in_category($tasks, $category) {
     $task_in_category = 0;
     if($category == 'Все') {
         $task_in_category = count($tasks);
@@ -11,7 +11,7 @@ function count_in_category($tasks, $category) {
         }
     }
     return $task_in_category;
-};
+};*/
 
 function include_template($path, $data){
 

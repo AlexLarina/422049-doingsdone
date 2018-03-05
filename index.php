@@ -2,6 +2,7 @@
     require_once('functions.php');
     require_once('init.php');
     require_once ('mysql_helper.php');
+    //require_once ('logout.php');
 
     $show_complete_tasks = 0;
     $body_class = '';
@@ -25,70 +26,67 @@
         $username = $session['name'];
         $user_id = $session['id'];
 
-        $project_result = mysqli_query($db_link, 'SELECT * FROM projects WHERE user_id = '.$user_id);
-        $projects_list = mysqli_fetch_all($project_result, MYSQLI_ASSOC);
+        $sql_projects_name = 'SELECT * FROM projects WHERE user_id = '.$user_id;
+        $sql_projects_name_result = mysqli_query($db_link, $sql_projects_name);
+        $projects_name = mysqli_fetch_all($sql_projects_name_result, MYSQLI_ASSOC);
 
-        foreach ($projects_list as $proj){
-            $projects_item = [
-                'DB_id' => $proj['id'],
-                'name' => $proj['name']
-            ];
-            array_push($projects, $projects_item);
-            array_push($project_names, $proj['name']);
+        $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks WHERE user_id = '.$user_id.' GROUP BY project_id;';
+        $sql_projects_num_result = mysqli_query($db_link, $sql_projects_num);
+        $projects_id_num = mysqli_fetch_all($sql_projects_num_result, MYSQLI_ASSOC);
+
+        $sql_tasks = 'SELECT * FROM tasks WHERE tasks.user_id = '.$user_id;
+
+        if(!$_COOKIE['showcompl']) {
+            $sql_tasks = $sql_tasks.' AND dt_done is NULL';
+            //$sql_projects_num = $sql_projects_num.' AND dt_done is NULL';
+            //$sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks WHERE dt_done is NULL AND user_id = '.$user_id.' GROUP BY project_id;';
         }
 
-        if($_COOKIE['showcompl']) {
-            $task_result_all = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id);
-        } else {
-            $task_result_all = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND dt_done IS NULL');
+        if(isset($_GET['agenda'])) {
+            $sql_tasks = $sql_tasks.' AND dt_deadline = CURDATE()';
         }
-        $task_list  = renderTasks($db_link, $task_result_all);
+
+        if(isset($_GET['tomorrow'])) {
+            $sql_tasks = $sql_tasks.' AND dt_deadline = DATE_ADD(NOW(), INTERVAL 1 DAY)';
+        }
+
+        if(isset($_GET['overdue'])) {
+            $sql_tasks = $sql_tasks.' AND dt_deadline < CURDATE()';
+        }
+
+        $projects = [];
+        $total_task_number = 0;
+        foreach ($projects_name as $key1 => $value1){
+            foreach ($projects_id_num as $key2 => $value2){
+                    $project = [
+                        'id' => $value1['id'],
+                        'name' => $value1['name'],
+                        'task_number' => $value2['COUNT(project_id)'],
+                    ];
+                    if($value1['id'] == $value2['project_id']) {
+                        array_push($projects, $project);
+                        array_push($project_names, $value1['name']);
+                        $total_task_number = $total_task_number + $value2['COUNT(project_id)'];
+                    }
+            }
+        }
+        array_push($projects, [
+            'id' => null,
+            'name' => 'Все',
+            'task_number' => $total_task_number
+        ]);
+        $project_names = array_reverse($project_names);
+        $projects = array_reverse($projects);
 
         if(isset($_GET['id'])) {
             $id = $_GET['id'];
-            if($_COOKIE['showcompl']) {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND project_id = '.$projects[$id]['DB_id']);
-            } else {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND project_id = '.$projects[$id]['DB_id'].' AND dt_done IS NULL');
-            }
-        } else {
-            if($_COOKIE['showcompl']) {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id);
-            } else {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND dt_done IS NULL');
-            }
-
-            //print_r(date('Y-m-d'));
-            if(isset($_GET['agenda'])) {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND dt_done IS NULL'
-                                            .' AND dt_deadline = CURDATE()');
-            }
-
-            if(isset($_GET['tomorrow'])) {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND dt_done IS NULL'
-                    .' AND dt_deadline = DATE_ADD(NOW(), INTERVAL 1 DAY)');
-            }
-
-            if(isset($_GET['overdue'])) {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND dt_done IS NULL'
-                    .' AND dt_deadline < CURDATE()');
-            }
+            $sql_tasks = $sql_tasks.' AND project_id = '.$projects[$id]['id'];
         }
 
-        $tasks_in_category = renderTasks($db_link, $task_result);
-        if(isset($_GET['done'])) {
-            $task_done = $_GET['done'];
-            $sql = 'UPDATE tasks SET dt_done = now() WHERE id = '.$task_done;
-            $stmt = db_get_prepare_stmt($db_link, $sql);
-            $result = mysqli_stmt_execute($stmt);
-            if($result){
-                header('Location: index.php');
-            } else {
-                echo mysqli_error($db_link);
-                exit();
-            }
-        }
+        $task_result = mysqli_query($db_link, $sql_tasks);
+        $task_list = mysqli_fetch_all($task_result, MYSQLI_ASSOC);
 
+        //print_r($projects);
     } else {
         $guest = include_template('templates/guest.php', []);
         if (isset($_GET['login'])) {
@@ -151,11 +149,6 @@
         }
     }
 
-    if (isset($_GET['logout'])) {
-        unset($_SESSION['user']);
-        header('Location: /index.php');
-    }
-
     if(isset($_GET['add'])) {
         $body_class = 'overlay';
         $form_content = include_template('templates/form.php', ['projects' => $projects]);
@@ -197,6 +190,8 @@
         $new_task = $_POST;
         $errors = [];
 
+        //print_r($new_task);
+
         if (empty($_POST['task'])) {
             $errors['task'] = 'Это поле надо заполнить';
         }
@@ -226,6 +221,7 @@
                 'projects' => $projects]);
         } else {
             $key = array_search($new_task['category'], $project_names);
+
             $sql = 'INSERT INTO tasks (dt_add, name, file_path, dt_deadline, user_id, project_id)
                     VALUES(NOW(), ?, ?, ?, ?, ?)';
 
@@ -234,7 +230,7 @@
                 $new_task['preview'],
                 date('Y-m-d', strtotime($new_task['date'])),
                 $_SESSION['user']['id'],
-                $projects[$key]['DB_id']
+                $projects[$key]['id']
             ]);
             $result = mysqli_stmt_execute($stmt);
             if($result){
@@ -248,7 +244,8 @@
     }
 
     $page_content = include_template('templates/index.php', [
-        'task_list' => $tasks_in_category,
+        'task_list' => $task_list,
+        'id' => $id,
         'show_complete_tasks' => $show_complete_tasks
     ]);
 

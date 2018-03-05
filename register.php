@@ -28,6 +28,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
+        if (!empty($sign_up['email']) && !filter_var($sign_up['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Некорректный формат email';
+        }
+
         if (count($errors)) {
             $data =  [
                 'errors' => $errors,
@@ -35,13 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 'err_message' => $err_message,
                 'sign_up' => $sign_up
             ];
-            //print_r('validation failed');
         } else {
-            //print_r('validation completed');
             $password = password_hash($sign_up['password'], PASSWORD_DEFAULT);
             $sql = 'INSERT INTO users (email, password, name, dt_reg) VALUES(?, ?, ?, NOW())';
             $stmt = db_get_prepare_stmt($db_link, $sql, [$sign_up['email'], $password, $sign_up['name']]);
             $result = mysqli_stmt_execute($stmt);
+
+            $new_email = mysqli_real_escape_string($db_link, $sign_up['email']);
+            $id_query = mysqli_query($db_link, "SELECT id FROM users WHERE email = '".$new_email."'");
+            $user_id = mysqli_fetch_assoc($id_query);
+            $default_project = mysqli_query($db_link, "INSERT INTO projects SET name = 'Входящие', user_id = '".$user_id['id']."'");
+
             if($result){
                 header('Location: index.php?login');
             } else {
