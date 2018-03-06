@@ -1,18 +1,11 @@
 <?php
 
-function count_in_category($tasks, $category) {
-    $task_in_category = 0;
-    if($category == 'Все') {
-        $task_in_category = count($tasks);
-    }
-    foreach ($tasks as $value){
-        if ($value['category'] == $category){
-            $task_in_category++;
-        }
-    }
-    return $task_in_category;
-};
-
+/**
+ * Creating template of html page
+ * @param $path page path
+ * @param $data page content
+ * @return mixed|string
+ */
 function include_template($path, $data){
 
     if(file_exists($path)){
@@ -26,17 +19,11 @@ function include_template($path, $data){
 
     return $html_content;
 };
-
-function filterByStatus($data){
-    $undone_tasks = [];
-    foreach ($data as $key => $value){
-        if($value['status'] == false){
-            $undone_tasks[$key] = $value;
-        }
-    }
-    return $undone_tasks;
-};
-
+/**
+ * Calculating the number of days between current date and task's deadline
+ * @param $task_date date of task
+ * @return float
+ */
 function calcDays($task_date){
     $current_date_stamp = time();
     $task_date_stamp = strtotime($task_date);
@@ -45,21 +32,23 @@ function calcDays($task_date){
 
     return $days;
 }
+
+/**
+ * Inverting value from 0 to 1 and conversely
+ * @param $value 1 or 0
+ * @return int
+ */
 function toggle_value ($value) {
     return $value = ($value ? 0 : 1);
 }
-function searchUserByEmail($email, $users) {
-    $result = null;
-    foreach ($users as $user) {
-        if ($user['email'] == $email) {
-            $result = $user;
-            break;
-        }
-    }
 
-    return $result;
-}
-
+/**
+ * Searching in project database if registered email already exists in database.
+ * If exists , returns user with appropriate email
+ * @param $link database link
+ * @param $email registered email
+ * @return array|null
+ */
 function searchUserByEmailInDB($link, $email) {
     $sql = "SELECT * FROM users WHERE email = '".$email."'";
     $result = mysqli_query($link, $sql);
@@ -68,33 +57,4 @@ function searchUserByEmailInDB($link, $email) {
     return $user;
 }
 
-function renderTasks ($link, $sql_result) {
-    $DB_tasks = mysqli_fetch_all($sql_result, MYSQLI_ASSOC);
-    $tasks = [];
-    foreach ($DB_tasks as $DBtask){
-        $project_DB_name = mysqli_query($link, 'SELECT name FROM projects WHERE id = '.$DBtask['project_id']);
-        $project_name = mysqli_fetch_assoc($project_DB_name);
-
-        $date = '';
-        $status = '';
-        if($DBtask['dt_deadline'] == null) {
-            $date = 'Нет';
-        } else {
-            $date = date('d.m.Y', strtotime($DBtask['dt_deadline']));
-            $status = (strtotime($DBtask['dt_deadline']) < time()) ? true : false;
-        }
-
-        $task = [
-            'task' => $DBtask['name'],
-            'date' => $date,
-            'category' => $project_name['name'],
-            'status' => $status,
-            'task_id' => $DBtask['id'],
-            'done' => $DBtask['dt_done']
-        ];
-        array_push($tasks, $task);
-    }
-
-    return $tasks;
-}
 ?>

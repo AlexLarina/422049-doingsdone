@@ -40,7 +40,7 @@ $err_message = '';
                         <option <?if ($value['name'] == 'Входящие') : ?><?='selected'?><?endif;?>
                         value="<?=$value['name'];?>">
                     <?php endif; ?>
-                    <?=$value['name'];?></option>
+                    <?=htmlspecialchars($value['name']);?></option>
                 <?php endforeach; ?>
             </select>
         </div>

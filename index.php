@@ -16,7 +16,9 @@
     $projects = [];
     $project_names = [];
     $tasks_in_category = [];
-    $id = '';
+    $id = 'all';
+    $filter = '';
+    $search_error = '';
 
     session_start();
 
@@ -25,67 +27,97 @@
         $username = $session['name'];
         $user_id = $session['id'];
 
-        $project_result = mysqli_query($db_link, 'SELECT * FROM projects WHERE user_id = '.$user_id);
-        $projects_list = mysqli_fetch_all($project_result, MYSQLI_ASSOC);
+        $sql_projects_name = 'SELECT * FROM projects WHERE user_id = '.$user_id;
 
-        foreach ($projects_list as $proj){
-            $projects_item = [
-                'DB_id' => $proj['id'],
-                'name' => $proj['name']
+        $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks 
+                             WHERE user_id = '.$user_id.' GROUP BY project_id;';
+
+        $sql_tasks = 'SELECT * FROM tasks WHERE tasks.user_id = '.$user_id;
+
+        if(!$_COOKIE['showcompl']) {
+            $sql_tasks = $sql_tasks.' AND dt_done is NULL';
+            $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks 
+                                 WHERE dt_done is NULL AND user_id = '.$user_id.' 
+                                 GROUP BY project_id;';
+        }
+
+        $sql_projects_name_result = mysqli_query($db_link, $sql_projects_name);
+        $projects_name = mysqli_fetch_all($sql_projects_name_result, MYSQLI_ASSOC);
+
+        $sql_projects_num_result = mysqli_query($db_link, $sql_projects_num);
+        $projects_id_num = mysqli_fetch_all($sql_projects_num_result, MYSQLI_ASSOC);
+
+        $projects = [];
+        $total_task_number = 0;
+
+        foreach ($projects_name as $key1 => $value1){
+            $project = [
+                'id' => $value1['id'],
+                'name' => $value1['name'],
+                'task_number' => 0,
             ];
-            array_push($projects, $projects_item);
-            array_push($project_names, $proj['name']);
+            foreach ($projects_id_num as $key2 => $value2){
+                if($value1['id'] == $value2['project_id']) {
+                    $project['task_number'] = $value2['COUNT(project_id)'];
+                    $total_task_number = $total_task_number + $value2['COUNT(project_id)'];
+                }
+            }
+            if($value1['name'] != 'Все') {
+                array_push($projects, $project);
+            }
+            array_push($project_names, $value1['name']);
         }
-
-        if($_COOKIE['showcompl']) {
-            $task_result_all = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id);
-        } else {
-            $task_result_all = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND dt_done IS NULL');
-        }
-        $task_list  = renderTasks($db_link, $task_result_all);
+        array_unshift($projects, [
+            'id' => null,
+            'name' => 'Все',
+            'task_number' => $total_task_number
+        ]);
 
         if(isset($_GET['id'])) {
             $id = $_GET['id'];
-            if($_COOKIE['showcompl']) {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND project_id = '.$projects[$id]['DB_id']);
-            } else {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND project_id = '.$projects[$id]['DB_id'].' AND dt_done IS NULL');
-            }
-        } else {
-            if($_COOKIE['showcompl']) {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id);
-            } else {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND dt_done IS NULL');
+            if($id != 'all') {
+                $sql_tasks = $sql_tasks . ' AND project_id = ' . $projects[$id]['id'];
             }
 
-            //print_r(date('Y-m-d'));
-            if(isset($_GET['agenda'])) {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND dt_done IS NULL'
-                                            .' AND dt_deadline = CURDATE()');
-            }
+        }
 
-            if(isset($_GET['tomorrow'])) {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND dt_done IS NULL'
-                    .' AND dt_deadline = DATE_ADD(NOW(), INTERVAL 1 DAY)');
-            }
+        if(isset($_GET['filter'])) {
+            $filter = $_GET['filter'];
 
-            if(isset($_GET['overdue'])) {
-                $task_result = mysqli_query($db_link, 'SELECT * FROM tasks WHERE user_id = '.$user_id.' AND dt_done IS NULL'
-                    .' AND dt_deadline < CURDATE()');
+            switch ($_GET['filter']) {
+                case 'all':
+                    $sql_tasks = $sql_tasks;
+                    break;
+                case 'agenda':
+                    $sql_tasks = $sql_tasks.' AND dt_deadline = CURDATE()';
+                    break;
+                case 'tomorrow':
+                    $sql_tasks = $sql_tasks.' AND dt_deadline = DATE_ADD(NOW(), INTERVAL 1 DAY)';
+                    break;
+                case 'overdue':
+                    $sql_tasks = $sql_tasks.' AND dt_deadline < CURDATE()';
+                    break;
             }
         }
 
-        $tasks_in_category = renderTasks($db_link, $task_result);
-        if(isset($_GET['done'])) {
-            $task_done = $_GET['done'];
-            $sql = 'UPDATE tasks SET dt_done = now() WHERE id = '.$task_done;
-            $stmt = db_get_prepare_stmt($db_link, $sql);
-            $result = mysqli_stmt_execute($stmt);
-            if($result){
-                header('Location: index.php');
-            } else {
-                echo mysqli_error($db_link);
-                exit();
+        $task_result = mysqli_query($db_link, $sql_tasks);
+        $task_list = mysqli_fetch_all($task_result, MYSQLI_ASSOC);
+
+        if (isset($_GET['search'])) {
+            $search = $_GET['search'];
+            if($search) {
+                $sql_search_tasks = 'SELECT * FROM tasks WHERE MATCH(name) AGAINST(?) AND tasks.user_id = '.$user_id;
+                $stmt = db_get_prepare_stmt($db_link, $sql_search_tasks, [$search]);
+                mysqli_stmt_execute($stmt);
+                $search_task_result = mysqli_stmt_get_result($stmt);
+                $search_task_list = mysqli_fetch_all($search_task_result, MYSQLI_ASSOC);
+
+                if($search_task_list) {
+                    $task_list = $search_task_list;
+                } else {
+                    $task_list = [];
+                    $search_error = 'По Вашему запросу ничего не найдено';
+                }
             }
         }
 
@@ -151,11 +183,6 @@
         }
     }
 
-    if (isset($_GET['logout'])) {
-        unset($_SESSION['user']);
-        header('Location: /index.php');
-    }
-
     if(isset($_GET['add'])) {
         $body_class = 'overlay';
         $form_content = include_template('templates/form.php', ['projects' => $projects]);
@@ -169,6 +196,7 @@
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_project'])) {
         $new_project = $_POST;
         $errors = [];
+        //print_r($new_project);
 
         if (empty($_POST['name'])) {
             $errors['name'] = 'Это поле надо заполнить';
@@ -184,6 +212,7 @@
             $sql = 'INSERT INTO projects (name, user_id) VALUES(?, ?)';
             $stmt = db_get_prepare_stmt($db_link, $sql, [$new_project['name'], $_SESSION['user']['id']]);
             $result = mysqli_stmt_execute($stmt);
+
             if($result){
                 header('Location: index.php');
             } else {
@@ -226,6 +255,7 @@
                 'projects' => $projects]);
         } else {
             $key = array_search($new_task['category'], $project_names);
+
             $sql = 'INSERT INTO tasks (dt_add, name, file_path, dt_deadline, user_id, project_id)
                     VALUES(NOW(), ?, ?, ?, ?, ?)';
 
@@ -234,7 +264,7 @@
                 $new_task['preview'],
                 date('Y-m-d', strtotime($new_task['date'])),
                 $_SESSION['user']['id'],
-                $projects[$key]['DB_id']
+                $projects[$key]['id']
             ]);
             $result = mysqli_stmt_execute($stmt);
             if($result){
@@ -248,7 +278,10 @@
     }
 
     $page_content = include_template('templates/index.php', [
-        'task_list' => $tasks_in_category,
+        'task_list' => $task_list,
+        'id' => $id,
+        'filter' => $filter,
+        'search_error' => $search_error,
         'show_complete_tasks' => $show_complete_tasks
     ]);
 
