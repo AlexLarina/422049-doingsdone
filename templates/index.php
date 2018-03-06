@@ -28,8 +28,7 @@
 
 <table class="tasks">
     <?=$search_error;?>
-    <?php
-    foreach ($task_list as $value): ?>
+    <? foreach ($task_list as $value): ?>
             <tr class="tasks__item task <? if($value['dt_done'] != null) { print("task--completed"); }  ?>
             <? if (abs(calcDays($value['dt_deadline'])) <= 1){ print("task--important"); } ?>">
                 <td class="task__select">
@@ -40,7 +39,7 @@
                         </a>
                     </label>
                 </td>
-                <td class="task__date"><?=htmlspecialchars(date('d.m.Y', strtotime($value['dt_deadline'])))?></td>
+                <td class="task__date"><?=(strtotime($value['dt_deadline']) == $time_zone_stamp) ? 'Нет' : htmlspecialchars(date('d.m.Y', strtotime($value['dt_deadline'])))?></td>
             </tr>
     <? endforeach; ?>
 </table>
