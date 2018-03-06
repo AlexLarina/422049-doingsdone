@@ -31,7 +31,7 @@
     <?php
     foreach ($task_list as $value): ?>
             <tr class="tasks__item task <? if($value['dt_done'] != null) { print("task--completed"); }  ?>
-            <? if (calcDays($value['dt_deadline']) <= 1){ print("task--important"); } ?>">
+            <? if (abs(calcDays($value['dt_deadline'])) <= 1){ print("task--important"); } ?>">
                 <td class="task__select">
                     <label class="checkbox task__checkbox">
                         <input class="checkbox__input visually-hidden" type="checkbox">
