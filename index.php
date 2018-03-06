@@ -4,18 +4,22 @@
     require_once ('mysql_helper.php');
 
     $show_complete_tasks = 0;
-    $body_class = '';
+    $cookie_value = 1;
+    $time_zone_stamp = -10800;
+
     $form_content = null;
     $session = null;
     $auth_form = null;
     $project_form_content = null;
-    $username = '';
     $guest = null;
-    $cookie_value = 1;
+
     $task_list = [];
     $projects = [];
     $project_names = [];
     $tasks_in_category = [];
+
+    $body_class = '';
+    $username = '';
     $id = 'all';
     $filter = '';
     $search_error = '';
@@ -235,8 +239,13 @@
         }
 
         $current_date = date('d.m.Y');
-        if ($current_date > date('d.m.Y', strtotime($new_task['date']))) {
-            $errors['date'] = 'Выберите дату не позже сегодняшней';
+        if($new_task['date'] != ''){
+            $date = date('Y-m-d', strtotime($new_task['date']));
+            if ($current_date > date('d.m.Y', strtotime($new_task['date']))) {
+                $errors['date'] = 'Выберите дату не позже сегодняшней';
+            }
+        } else {
+            $date = date('Y-m-d', '0');
         }
 
         if (isset($_FILES['preview']['name'])) {
@@ -262,10 +271,11 @@
             $stmt = db_get_prepare_stmt($db_link, $sql, [
                 $new_task['task'],
                 $new_task['preview'],
-                date('Y-m-d', strtotime($new_task['date'])),
+                $date,
                 $_SESSION['user']['id'],
                 $projects[$key]['id']
             ]);
+            //date('Y-m-d', strtotime($new_task['date'])),
             $result = mysqli_stmt_execute($stmt);
             if($result){
                 header('Location: index.php');
@@ -282,6 +292,7 @@
         'id' => $id,
         'filter' => $filter,
         'search_error' => $search_error,
+        'time_zone_stamp' => $time_zone_stamp,
         'show_complete_tasks' => $show_complete_tasks
     ]);
 
