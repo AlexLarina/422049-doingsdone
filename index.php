@@ -92,7 +92,7 @@
                     $sql_tasks = $sql_tasks.' AND dt_deadline = CURDATE()';
                     break;
                 case 'tomorrow':
-                    $sql_tasks = $sql_tasks.' AND dt_deadline = DATE_ADD(NOW(), INTERVAL 1 DAY)';
+                    $sql_tasks = $sql_tasks.' AND dt_deadline > nOW() AND dt_deadline <= DATE_ADD(NOW(), INTERVAL 1 DAY)';
                     break;
                 case 'overdue':
                     $sql_tasks = $sql_tasks.' AND dt_deadline < CURDATE()';
