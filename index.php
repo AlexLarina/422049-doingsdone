@@ -27,66 +27,74 @@
         $user_id = $session['id'];
 
         $sql_projects_name = 'SELECT * FROM projects WHERE user_id = '.$user_id;
-        $sql_projects_name_result = mysqli_query($db_link, $sql_projects_name);
-        $projects_name = mysqli_fetch_all($sql_projects_name_result, MYSQLI_ASSOC);
 
         $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks WHERE user_id = '.$user_id.' GROUP BY project_id;';
-        $sql_projects_num_result = mysqli_query($db_link, $sql_projects_num);
-        $projects_id_num = mysqli_fetch_all($sql_projects_num_result, MYSQLI_ASSOC);
 
         $sql_tasks = 'SELECT * FROM tasks WHERE tasks.user_id = '.$user_id;
 
         if(!$_COOKIE['showcompl']) {
             $sql_tasks = $sql_tasks.' AND dt_done is NULL';
-            //$sql_projects_num = $sql_projects_num.' AND dt_done is NULL';
-            //$sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks WHERE dt_done is NULL AND user_id = '.$user_id.' GROUP BY project_id;';
+            $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks WHERE dt_done is NULL AND user_id = '.$user_id.' GROUP BY project_id;';
         }
 
-        if(isset($_GET['agenda'])) {
-            $sql_tasks = $sql_tasks.' AND dt_deadline = CURDATE()';
-        }
+        $sql_projects_name_result = mysqli_query($db_link, $sql_projects_name);
+        $projects_name = mysqli_fetch_all($sql_projects_name_result, MYSQLI_ASSOC);
 
-        if(isset($_GET['tomorrow'])) {
-            $sql_tasks = $sql_tasks.' AND dt_deadline = DATE_ADD(NOW(), INTERVAL 1 DAY)';
-        }
-
-        if(isset($_GET['overdue'])) {
-            $sql_tasks = $sql_tasks.' AND dt_deadline < CURDATE()';
-        }
+        $sql_projects_num_result = mysqli_query($db_link, $sql_projects_num);
+        $projects_id_num = mysqli_fetch_all($sql_projects_num_result, MYSQLI_ASSOC);
 
         $projects = [];
         $total_task_number = 0;
+
         foreach ($projects_name as $key1 => $value1){
+            $project = [
+                'id' => $value1['id'],
+                'name' => $value1['name'],
+                'task_number' => 0,
+            ];
             foreach ($projects_id_num as $key2 => $value2){
-                    $project = [
-                        'id' => $value1['id'],
-                        'name' => $value1['name'],
-                        'task_number' => $value2['COUNT(project_id)'],
-                    ];
-                    if($value1['id'] == $value2['project_id']) {
-                        array_push($projects, $project);
-                        array_push($project_names, $value1['name']);
-                        $total_task_number = $total_task_number + $value2['COUNT(project_id)'];
-                    }
+                if($value1['id'] == $value2['project_id']) {
+                    $project['task_number'] = $value2['COUNT(project_id)'];
+                    $total_task_number = $total_task_number + $value2['COUNT(project_id)'];
+                }
             }
+            if($value1['name'] != 'Все') {
+                array_push($projects, $project);
+            }
+            array_push($project_names, $value1['name']);
         }
-        array_push($projects, [
+        array_unshift($projects, [
             'id' => null,
             'name' => 'Все',
             'task_number' => $total_task_number
         ]);
-        $project_names = array_reverse($project_names);
-        $projects = array_reverse($projects);
 
         if(isset($_GET['id'])) {
             $id = $_GET['id'];
             $sql_tasks = $sql_tasks.' AND project_id = '.$projects[$id]['id'];
         }
 
+        if(isset($_GET['filter'])) {
+            $filter = $_GET['filter'];
+            switch ($_GET['filter']) {
+                case 'all':
+                    $sql_tasks = $sql_tasks;
+                    break;
+                case 'agenda':
+                    $sql_tasks = $sql_tasks.' AND dt_deadline = CURDATE()';
+                    break;
+                case 'tomorrow':
+                    $sql_tasks = $sql_tasks.' AND dt_deadline = DATE_ADD(NOW(), INTERVAL 1 DAY)';
+                    break;
+                case 'overdue':
+                    $sql_tasks = $sql_tasks.' AND dt_deadline < CURDATE()';
+                    break;
+            }
+        }
+
         $task_result = mysqli_query($db_link, $sql_tasks);
         $task_list = mysqli_fetch_all($task_result, MYSQLI_ASSOC);
 
-        //print_r($projects);
     } else {
         $guest = include_template('templates/guest.php', []);
         if (isset($_GET['login'])) {
@@ -162,6 +170,7 @@
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_project'])) {
         $new_project = $_POST;
         $errors = [];
+        //print_r($new_project);
 
         if (empty($_POST['name'])) {
             $errors['name'] = 'Это поле надо заполнить';
@@ -177,6 +186,7 @@
             $sql = 'INSERT INTO projects (name, user_id) VALUES(?, ?)';
             $stmt = db_get_prepare_stmt($db_link, $sql, [$new_project['name'], $_SESSION['user']['id']]);
             $result = mysqli_stmt_execute($stmt);
+
             if($result){
                 header('Location: index.php');
             } else {
@@ -189,8 +199,6 @@
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['task'])) {
         $new_task = $_POST;
         $errors = [];
-
-        //print_r($new_task);
 
         if (empty($_POST['task'])) {
             $errors['task'] = 'Это поле надо заполнить';
@@ -246,6 +254,7 @@
     $page_content = include_template('templates/index.php', [
         'task_list' => $task_list,
         'id' => $id,
+        'filter' => $filter,
         'show_complete_tasks' => $show_complete_tasks
     ]);
 
