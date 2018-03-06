@@ -2,7 +2,6 @@
     require_once('functions.php');
     require_once('init.php');
     require_once ('mysql_helper.php');
-    //require_once ('logout.php');
 
     $show_complete_tasks = 0;
     $body_class = '';
@@ -17,7 +16,9 @@
     $projects = [];
     $project_names = [];
     $tasks_in_category = [];
-    $id = '';
+    $id = 'all';
+    $filter = '';
+    $search_error = '';
 
     session_start();
 
@@ -28,13 +29,16 @@
 
         $sql_projects_name = 'SELECT * FROM projects WHERE user_id = '.$user_id;
 
-        $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks WHERE user_id = '.$user_id.' GROUP BY project_id;';
+        $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks 
+                             WHERE user_id = '.$user_id.' GROUP BY project_id;';
 
         $sql_tasks = 'SELECT * FROM tasks WHERE tasks.user_id = '.$user_id;
 
         if(!$_COOKIE['showcompl']) {
             $sql_tasks = $sql_tasks.' AND dt_done is NULL';
-            $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks WHERE dt_done is NULL AND user_id = '.$user_id.' GROUP BY project_id;';
+            $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks 
+                                 WHERE dt_done is NULL AND user_id = '.$user_id.' 
+                                 GROUP BY project_id;';
         }
 
         $sql_projects_name_result = mysqli_query($db_link, $sql_projects_name);
@@ -71,11 +75,15 @@
 
         if(isset($_GET['id'])) {
             $id = $_GET['id'];
-            $sql_tasks = $sql_tasks.' AND project_id = '.$projects[$id]['id'];
+            if($id != 'all') {
+                $sql_tasks = $sql_tasks . ' AND project_id = ' . $projects[$id]['id'];
+            }
+
         }
 
         if(isset($_GET['filter'])) {
             $filter = $_GET['filter'];
+
             switch ($_GET['filter']) {
                 case 'all':
                     $sql_tasks = $sql_tasks;
@@ -94,6 +102,24 @@
 
         $task_result = mysqli_query($db_link, $sql_tasks);
         $task_list = mysqli_fetch_all($task_result, MYSQLI_ASSOC);
+
+        if (isset($_GET['search'])) {
+            $search = $_GET['search'];
+            if($search) {
+                $sql_search_tasks = 'SELECT * FROM tasks WHERE MATCH(name) AGAINST(?) AND tasks.user_id = '.$user_id;
+                $stmt = db_get_prepare_stmt($db_link, $sql_search_tasks, [$search]);
+                mysqli_stmt_execute($stmt);
+                $search_task_result = mysqli_stmt_get_result($stmt);
+                $search_task_list = mysqli_fetch_all($search_task_result, MYSQLI_ASSOC);
+
+                if($search_task_list) {
+                    $task_list = $search_task_list;
+                } else {
+                    $task_list = [];
+                    $search_error = 'По Вашему запросу ничего не найдено';
+                }
+            }
+        }
 
     } else {
         $guest = include_template('templates/guest.php', []);
@@ -255,6 +281,7 @@
         'task_list' => $task_list,
         'id' => $id,
         'filter' => $filter,
+        'search_error' => $search_error,
         'show_complete_tasks' => $show_complete_tasks
     ]);
 
