@@ -22,7 +22,7 @@ function include_template($path, $data){
 /**
  * Calculating the number of days between current date and task's deadline
  * @param $task_date date of task
- * @return float
+ * @return int
  */
 function calcDays($task_date){
     $current_date_stamp = time();

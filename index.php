@@ -2,7 +2,6 @@
     require_once('functions.php');
     require_once('init.php');
     require_once ('mysql_helper.php');
-    require_once('vendor/autoload.php');
 
     $show_complete_tasks = 0;
     $cookie_value = 1;
@@ -97,7 +96,7 @@
                     $sql_tasks = $sql_tasks.' AND dt_deadline = CURDATE()';
                     break;
                 case 'tomorrow':
-                    $sql_tasks = $sql_tasks.' AND dt_deadline > nOW() AND dt_deadline <= DATE_ADD(NOW(), INTERVAL 1 DAY)';
+                    $sql_tasks = $sql_tasks.' AND dt_deadline > NOW() AND dt_deadline <= DATE_ADD(NOW(), INTERVAL 1 DAY)';
                     break;
                 case 'overdue':
                     $sql_tasks = $sql_tasks.' AND dt_deadline < CURDATE()';
@@ -188,6 +187,21 @@
         }
     }
 
+    if(isset($_GET['done'])){
+        $task_id = $_GET['done'];
+        //print_r($task_id);
+        $sql_set_done = "UPDATE tasks SET dt_done = NOW() WHERE id = ?";
+        $stmt = db_get_prepare_stmt($db_link, $sql_set_done, [$task_id]);
+        $result = mysqli_stmt_execute($stmt);
+
+        if($result){
+            header('Location: index.php');
+        } else {
+            echo mysqli_error($db_link);
+            exit();
+        }
+    }
+
     if(isset($_GET['add'])) {
         $body_class = 'overlay';
         $form_content = include_template('templates/form.php', ['projects' => $projects]);
@@ -201,7 +215,6 @@
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_project'])) {
         $new_project = $_POST;
         $errors = [];
-        //print_r($new_project);
 
         if (empty($_POST['name'])) {
             $errors['name'] = 'Это поле надо заполнить';
@@ -276,7 +289,6 @@
                 $_SESSION['user']['id'],
                 $projects[$key]['id']
             ]);
-            //date('Y-m-d', strtotime($new_task['date'])),
             $result = mysqli_stmt_execute($stmt);
             if($result){
                 header('Location: index.php');
