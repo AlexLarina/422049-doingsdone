@@ -2,6 +2,7 @@
     require_once('functions.php');
     require_once('init.php');
     require_once ('mysql_helper.php');
+    require_once('vendor/autoload.php');
 
     $show_complete_tasks = 0;
     $cookie_value = 1;

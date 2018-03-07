@@ -1,0 +1,14 @@
+{
+    "name": "alexandra/doingsdone",
+    "description": "HTMLAcademy basic PHP project",
+    "type": "project",
+    "require": {
+        "swiftmailer/swiftmailer": "^6.0"
+    },
+    "authors": [
+        {
+            "name": "Alexandra Larina",
+            "email": "aa.larina.ff@gmail.com"
+        }
+    ]
+}
