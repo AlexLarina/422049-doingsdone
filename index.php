@@ -189,7 +189,6 @@
 
     if(isset($_GET['done'])){
         $task_id = $_GET['done'];
-        //print_r($task_id);
         $sql_set_done = "UPDATE tasks SET dt_done = NOW() WHERE id = ?";
         $stmt = db_get_prepare_stmt($db_link, $sql_set_done, [$task_id]);
         $result = mysqli_stmt_execute($stmt);
