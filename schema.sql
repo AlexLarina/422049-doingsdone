@@ -32,7 +32,6 @@ CREATE TABLE users (
 );
 
 CREATE UNIQUE INDEX email ON users(email);
-CREATE UNIQUE INDEX filepath ON tasks(file_path);
 CREATE INDEX task_name ON tasks(name);
 
 CREATE FULLTEXT INDEX task_ft_search ON tasks(name);
