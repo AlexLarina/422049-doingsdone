@@ -193,14 +193,14 @@ function search_tasks ($link, $search, $user_id) {
  * @param $key key of choosen project in projects array
  * @return bool
  */
-function insert_task ($link, $new_task, $date, $projects, $key) {
+function insert_task ($link, $new_task, $date, $projects, $key, $path) {
 
     $sql = 'INSERT INTO tasks (dt_add, name, file_path, dt_deadline, user_id, project_id)
                     VALUES(NOW(), ?, ?, ?, ?, ?)';
 
     $stmt = db_get_prepare_stmt($link, $sql, [
         $new_task['task'],
-        $new_task['preview'],
+        $path,
         $date,
         $_SESSION['user']['id'],
         $projects[$key]['id']

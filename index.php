@@ -201,10 +201,11 @@
         }
 
         if (isset($_FILES['preview']['name'])) {
+
             $tmp_name = $_FILES['preview']['tmp_name'];
             $path = $_FILES['preview']['name'];
             move_uploaded_file($tmp_name, 'uploads/' . $path);
-            $new_task['path'] = $path;
+            $new_task['path'] = 'uploads/'.$path;
         }
 
         if (count($errors)) {
@@ -217,7 +218,7 @@
         } else {
             $key = array_search($new_task['category'], $project_names);
 
-            $result = insert_task($db_link, $new_task, $date, $projects, $key);
+            $result = insert_task($db_link, $new_task, $date, $projects, $key, $new_task['path']);
 
             if($result){
                 header('Location: index.php');
