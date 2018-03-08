@@ -37,7 +37,6 @@
         $task_list = get_tasks($db_link, $user_id, $_COOKIE['showcompl'], $projects, $id, $filter);
 
         if (isset($_GET['search'])) {
-            //$search = $_GET['search'];
             $search = trim($_GET['search']);
             if($search) {
                 $search_task_list = search_tasks($db_link, $search, $user_id);
@@ -68,7 +67,16 @@
             $cookie_value = toggle_value($_COOKIE['showcompl']);
         }
         setcookie('showcompl', $cookie_value, strtotime("+30 days"), "/");
-        header("Location: index.php?id=".$_GET['id']."&filter=".$_GET['filter']."");
+        $header = "Location: index.php?";
+
+        if(isset($_GET['id'])) {
+            $header = $header."id=".$_GET['id'];
+        }
+        if(isset($_GET['filter'])) {
+            $header = $header."&filter=".$_GET['filter']."";
+        }
+        header($header);
+        //header("Location: index.php?id=".$_GET['id']."&filter=".$_GET['filter']."");
     }
 
     if (isset($_COOKIE['showcompl'])) {
