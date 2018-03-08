@@ -33,40 +33,10 @@
 
         $projects = get_projects($user_id, $_COOKIE['showcompl'], $db_link);
 
-        $sql_tasks = 'SELECT * FROM tasks WHERE tasks.user_id = '.$user_id;
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $filter = isset($_GET['filter']) ? $_GET['filter'] : '';
 
-        if(!$_COOKIE['showcompl']) {
-            $sql_tasks = $sql_tasks.' AND dt_done is NULL';
-        }
-
-        if(isset($_GET['id'])) {
-            $id = $_GET['id'];
-            if($id != 'all') {
-                $sql_tasks = $sql_tasks . ' AND project_id = ' . $projects[$id]['id'];
-            }
-
-        }
-
-        if(isset($_GET['filter'])) {
-            $filter = $_GET['filter'];
-
-            switch ($_GET['filter']) {
-                case 'all':
-                    $sql_tasks = $sql_tasks;
-                    break;
-                case 'agenda':
-                    $sql_tasks = $sql_tasks.' AND dt_deadline = CURDATE()';
-                    break;
-                case 'tomorrow':
-                    $sql_tasks = $sql_tasks.' AND dt_deadline > NOW() AND dt_deadline <= DATE_ADD(NOW(), INTERVAL 1 DAY)';
-                    break;
-                case 'overdue':
-                    $sql_tasks = $sql_tasks.' AND dt_deadline < CURDATE()';
-                    break;
-            }
-        }
-
-        $task_list = get_tasks($sql_tasks, $db_link);
+        $task_list = get_tasks($db_link, $user_id, $_COOKIE['showcompl'], $projects, $id, $filter);
 
         if (isset($_GET['search'])) {
             $search = $_GET['search'];

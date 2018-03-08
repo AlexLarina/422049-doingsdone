@@ -8,13 +8,13 @@
 
 <div class="tasks-controls">
     <nav class="tasks-switch">
-        <a href="index.php?<?=(isset($id)) ? 'id='.$id.'&' : 'all';?>filter=all"
+        <a href="index.php?<?=(isset($id)) ? 'id='.$id : 'all';?>&filter=all"
            class="tasks-switch__item <?=($filter == 'all') || (!$filter) ? 'tasks-switch__item--active' : '';?>">Все задачи</a>
-        <a href="index.php?<?=(isset($id)) ? 'id='.$id.'&' : 'all';?>filter=agenda"
+        <a href="index.php?<?=(isset($id)) ? 'id='.$id : 'all';?>&filter=agenda"
            class="tasks-switch__item <?=($filter== 'agenda') ? 'tasks-switch__item--active': '';?>">Повестка дня</a>
-        <a href="index.php?<?=(isset($id)) ? 'id='.$id.'&' : 'all';?>filter=tomorrow"
+        <a href="index.php?<?=(isset($id)) ? 'id='.$id : 'all';?>&filter=tomorrow"
            class="tasks-switch__item <?=($filter == 'tomorrow') ? 'tasks-switch__item--active': '';?>">Завтра</a>
-        <a href="index.php?<?=(isset($id)) ? 'id='.$id.'&' : 'all';?>filter=overdue"
+        <a href="index.php?<?=(isset($id)) ? 'id='.$id : 'all';?>&filter=overdue"
            class="tasks-switch__item <?=($filter == 'overdue') ? 'tasks-switch__item--active': '';?>">Просроченные</a>
     </nav>
 

@@ -113,13 +113,48 @@ function get_projects ($user_id, $cookie, $link) {
 }
 
 /**
- * Returns array of user's tasks
- * @param $sql sql query to database
+ * Returns array of user's tasks depending on category and filter status
  * @param $link database link
+ * @param $user_id
+ * @param $cookie
+ * @param $projects array of user's projects
+ * @param $id project id
+ * @param $filter
  * @return array
  */
-function get_tasks ($sql, $link) {
-    $task_result = mysqli_query($link, $sql);
+function get_tasks ($link, $user_id, $cookie, $projects, $id, $filter) {
+
+    $sql_tasks = 'SELECT * FROM tasks WHERE tasks.user_id = '.$user_id;
+
+    if(!$cookie) {
+        $sql_tasks = $sql_tasks.' AND dt_done is NULL';
+    }
+
+    if(isset($id)) {
+        if($id != 'all') {
+            $sql_tasks = $sql_tasks . ' AND project_id = ' . $projects[$id]['id'];
+        }
+    }
+
+    if(isset($filter)) {
+        switch ($filter) {
+            case 'all':
+                $sql_tasks = $sql_tasks;
+                break;
+            case 'agenda':
+                $sql_tasks = $sql_tasks . ' AND dt_deadline = CURDATE()';
+                break;
+            case 'tomorrow':
+                $sql_tasks = $sql_tasks . ' AND dt_deadline > NOW() AND dt_deadline <= DATE_ADD(NOW(), INTERVAL 1 DAY)';
+                break;
+            case 'overdue':
+                $sql_tasks = $sql_tasks . ' AND dt_deadline < CURDATE()';
+                break;
+        }
+    }
+
+    $task_result = mysqli_query($link, $sql_tasks);
+
     $task_list = mysqli_fetch_all($task_result, MYSQLI_ASSOC);
 
     return $task_list;
