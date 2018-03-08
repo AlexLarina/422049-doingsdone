@@ -201,6 +201,8 @@
             $date = date('Y-m-d', '0');
         }
 
+        // ПР, откройся
+
         if (isset($_FILES['preview']['name'])) {
             $tmp_name = $_FILES['preview']['tmp_name'];
             $path = $_FILES['preview']['name'];
