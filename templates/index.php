@@ -19,7 +19,7 @@
     </nav>
 
     <label class="checkbox">
-        <a href="index.php?show_completed">
+        <a href="index.php?<?=(isset($id)) ? 'id='.$id.'&' : '&';?><?=(isset($filter)) ? 'filter='.$filter.'&' : 'filter=all&';?>show_completed">
             <input class="checkbox__input visually-hidden" type="checkbox" <?=$show_complete_tasks ? 'checked' : '' ;?>>
             <span class="checkbox__text">Показывать выполненные</span>
         </a>

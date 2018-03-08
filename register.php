@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $id_query = mysqli_query($db_link, "SELECT id FROM users WHERE email = '".$new_email."'");
             $user_id = mysqli_fetch_assoc($id_query);
             $default_project = mysqli_query($db_link, "INSERT INTO projects 
-                                            SET name = 'Входящие', user_id = '".$user_id['id']."'");
+                                            SET name = 'Все', user_id = '".$user_id['id']."'");
 
             if($result){
                 header('Location: index.php?login');

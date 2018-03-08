@@ -29,13 +29,13 @@
         $username = $session['name'];
         $user_id = $session['id'];
 
-        $projects = get_projects($user_id, $_COOKIE['showcompl'], $db_link);
+        $projects = get_projects($user_id, $db_link);
 
         $id = isset($_GET['id']) ? $_GET['id'] : null;
         $filter = isset($_GET['filter']) ? $_GET['filter'] : '';
 
         $task_list = get_tasks($db_link, $user_id, $_COOKIE['showcompl'], $projects, $id, $filter);
-        
+
         if (isset($_GET['search'])) {
             $search = $_GET['search'];
             if($search) {
@@ -67,8 +67,9 @@
             $cookie_value = toggle_value($_COOKIE['showcompl']);
         }
         setcookie('showcompl', $cookie_value, strtotime("+30 days"), "/");
-        header('Location: /');
+        header("Location: index.php?id=".$_GET['id']."&filter=".$_GET['filter']."");
     }
+
     if (isset($_COOKIE['showcompl'])) {
         $show_complete_tasks = $_COOKIE['showcompl'];
     }
@@ -165,15 +166,21 @@
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['task'])) {
         $new_task = $_POST;
+
         $errors = [];
+
         $project_names = get_projects_names($projects);
 
         if (empty($_POST['task'])) {
             $errors['task'] = 'Это поле надо заполнить';
         }
 
-        if (!in_array($_POST['category'], $project_names)) {
-            $errors['category'] = 'Выберите из предложенного';
+        if(!count($project_names)) {
+            $errors['category'] = 'Добавьте проект';
+        } else {
+            if (!in_array($_POST['category'], $project_names)) {
+                $errors['category'] = 'Выберите из предложенного';
+            }
         }
 
         $current_date = date('d.m.Y');

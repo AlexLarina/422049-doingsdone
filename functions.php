@@ -50,6 +50,8 @@ function toggle_value ($value) {
  * @return array|null
  */
 function searchUserByEmailInDB($link, $email) {
+    $email = mysqli_real_escape_string($link, $email);
+
     $sql = "SELECT * FROM users WHERE email = '".$email."'";
     $result = mysqli_query($link, $sql);
     $user = mysqli_fetch_assoc($result);
@@ -64,17 +66,13 @@ function searchUserByEmailInDB($link, $email) {
  * @param $link database link
  * @return array
  */
-function get_projects ($user_id, $cookie, $link) {
+function get_projects ($user_id, $link) {
 
     $sql_projects_name = 'SELECT * FROM projects WHERE user_id = '.$user_id;
 
-    $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks 
-                             WHERE user_id = '.$user_id.' GROUP BY project_id;';
-    if(!$cookie) {
-        $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks 
-                                 WHERE dt_done is NULL AND user_id = '.$user_id.' 
+    $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks
+                                 WHERE dt_done is NULL AND user_id = '.$user_id.'
                                  GROUP BY project_id;';
-    }
 
     $sql_projects_name_result = mysqli_query($link, $sql_projects_name);
     $projects_name = mysqli_fetch_all($sql_projects_name_result, MYSQLI_ASSOC);
@@ -120,9 +118,7 @@ function get_projects ($user_id, $cookie, $link) {
 function get_projects_names ($projects) {
     $project_names = [];
     foreach ($projects as $key => $value){
-        if($value['name'] != 'Все') {
-            array_push($project_names, $value['name']);
-        }
+        array_push($project_names, $value['name']);
     }
     return $project_names;
 }

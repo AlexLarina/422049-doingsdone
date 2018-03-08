@@ -49,6 +49,9 @@ $err_message = '';
             <?php if (isset($errors['date'])) {
                 $classname = 'form__input--error';
                 $err_message = '<p class="form_message">'.$errors['date'].'</p>';
+            }  else {
+                $classname = '';
+                $err_message = '';
             } ?>
             <?=$err_message;?>
 
