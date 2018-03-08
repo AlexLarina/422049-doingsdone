@@ -31,51 +31,13 @@
         $username = $session['name'];
         $user_id = $session['id'];
 
-        $sql_projects_name = 'SELECT * FROM projects WHERE user_id = '.$user_id;
-
-        $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks 
-                             WHERE user_id = '.$user_id.' GROUP BY project_id;';
+        $projects = get_projects($user_id, $_COOKIE['showcompl'], $db_link);
 
         $sql_tasks = 'SELECT * FROM tasks WHERE tasks.user_id = '.$user_id;
 
         if(!$_COOKIE['showcompl']) {
             $sql_tasks = $sql_tasks.' AND dt_done is NULL';
-            $sql_projects_num = 'SELECT project_id, COUNT(project_id) FROM tasks 
-                                 WHERE dt_done is NULL AND user_id = '.$user_id.' 
-                                 GROUP BY project_id;';
         }
-
-        $sql_projects_name_result = mysqli_query($db_link, $sql_projects_name);
-        $projects_name = mysqli_fetch_all($sql_projects_name_result, MYSQLI_ASSOC);
-
-        $sql_projects_num_result = mysqli_query($db_link, $sql_projects_num);
-        $projects_id_num = mysqli_fetch_all($sql_projects_num_result, MYSQLI_ASSOC);
-
-        $projects = [];
-        $total_task_number = 0;
-
-        foreach ($projects_name as $key1 => $value1){
-            $project = [
-                'id' => $value1['id'],
-                'name' => $value1['name'],
-                'task_number' => 0,
-            ];
-            foreach ($projects_id_num as $key2 => $value2){
-                if($value1['id'] == $value2['project_id']) {
-                    $project['task_number'] = $value2['COUNT(project_id)'];
-                    $total_task_number = $total_task_number + $value2['COUNT(project_id)'];
-                }
-            }
-            if($value1['name'] != 'Все') {
-                array_push($projects, $project);
-            }
-            array_push($project_names, $value1['name']);
-        }
-        array_unshift($projects, [
-            'id' => null,
-            'name' => 'Все',
-            'task_number' => $total_task_number
-        ]);
 
         if(isset($_GET['id'])) {
             $id = $_GET['id'];
@@ -104,17 +66,12 @@
             }
         }
 
-        $task_result = mysqli_query($db_link, $sql_tasks);
-        $task_list = mysqli_fetch_all($task_result, MYSQLI_ASSOC);
+        $task_list = get_tasks($sql_tasks, $db_link);
 
         if (isset($_GET['search'])) {
             $search = $_GET['search'];
             if($search) {
-                $sql_search_tasks = 'SELECT * FROM tasks WHERE MATCH(name) AGAINST(?) AND tasks.user_id = '.$user_id;
-                $stmt = db_get_prepare_stmt($db_link, $sql_search_tasks, [$search]);
-                mysqli_stmt_execute($stmt);
-                $search_task_result = mysqli_stmt_get_result($stmt);
-                $search_task_list = mysqli_fetch_all($search_task_result, MYSQLI_ASSOC);
+                $search_task_list = search_tasks($db_link, $search, $user_id);
 
                 if($search_task_list) {
                     $task_list = $search_task_list;
