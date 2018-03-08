@@ -76,7 +76,6 @@
             $header = $header."filter=".$_GET['filter']."";
         }
         header($header);
-        //header("Location: index.php?id=".$_GET['id']."&filter=".$_GET['filter']."");
     }
 
     if (isset($_COOKIE['showcompl'])) {
