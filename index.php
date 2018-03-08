@@ -174,7 +174,6 @@
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['task'])) {
         $new_task = $_POST;
-
         $errors = [];
 
         $project_names = get_projects_names($projects);
@@ -201,12 +200,10 @@
             $date = date('Y-m-d', '0');
         }
 
-        // ПР, откройся
-
         if (isset($_FILES['preview']['name'])) {
             $tmp_name = $_FILES['preview']['tmp_name'];
             $path = $_FILES['preview']['name'];
-            move_uploaded_file($tmp_name, '' . $path);
+            move_uploaded_file($tmp_name, 'uploads/' . $path);
             $new_task['path'] = $path;
         }
 

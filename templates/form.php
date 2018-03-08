@@ -6,7 +6,7 @@ $err_message = '';
     <button class="modal__close" type="button" name="button">Закрыть</button>
 
     <h2 class="modal__heading">Добавление задачи</h2>
-    <form class="form" action="index.php" method="post">
+    <form class="form" action="index.php" method="post" enctype="multipart/form-data">
         <div class="form__row">
             <? if (isset($errors['task'])) {
                 $classname = 'form__input--error';
