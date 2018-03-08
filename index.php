@@ -72,7 +72,7 @@
         if(isset($_GET['id'])) {
             $header = $header."id=".$_GET['id']."&";
         }
-        if(isset($_GET['filter'])) {
+        if(isset($_GET['filter']) && !empty($_GET['filter'])) {
             $header = $header."filter=".$_GET['filter']."";
         }
         header($header);
