@@ -39,6 +39,11 @@
                         </a>
                     </label>
                 </td>
+                <td class="task__file">
+                    <?php if ($value['file_path']): ?>
+                        <a class="download-link" href="<?=$value['file_path'];?>"></a>
+                    <?php endif; ?>
+                </td>
                 <td class="task__date"><?=(strtotime($value['dt_deadline']) == $time_zone_stamp || $value['dt_deadline'] == null) ? 'Нет' : htmlspecialchars(date('d.m.Y', strtotime($value['dt_deadline'])))?></td>
             </tr>
     <? endforeach; ?>
