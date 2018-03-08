@@ -70,10 +70,10 @@
         $header = "Location: index.php?";
 
         if(isset($_GET['id'])) {
-            $header = $header."id=".$_GET['id'];
+            $header = $header."id=".$_GET['id']."&";
         }
         if(isset($_GET['filter'])) {
-            $header = $header."&filter=".$_GET['filter']."";
+            $header = $header."filter=".$_GET['filter']."";
         }
         header($header);
         //header("Location: index.php?id=".$_GET['id']."&filter=".$_GET['filter']."");

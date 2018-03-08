@@ -158,7 +158,7 @@ function get_tasks ($link, $user_id, $cookie, $projects, $id, $filter) {
                 $sql_tasks = $sql_tasks . ' AND dt_deadline > NOW() AND dt_deadline <= DATE_ADD(NOW(), INTERVAL 1 DAY)';
                 break;
             case 'overdue':
-                $sql_tasks = $sql_tasks . ' AND dt_deadline < CURDATE()';
+                $sql_tasks = $sql_tasks . ' AND dt_deadline > "1970-01-01" AND dt_deadline < CURDATE()';
                 break;
         }
     }
