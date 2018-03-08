@@ -37,7 +37,8 @@
         $task_list = get_tasks($db_link, $user_id, $_COOKIE['showcompl'], $projects, $id, $filter);
 
         if (isset($_GET['search'])) {
-            $search = $_GET['search'];
+            //$search = $_GET['search'];
+            $search = trim($_GET['search']);
             if($search) {
                 $search_task_list = search_tasks($db_link, $search, $user_id);
 
