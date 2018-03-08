@@ -113,6 +113,20 @@ function get_projects ($user_id, $cookie, $link) {
 }
 
 /**
+ * Returns array of projects' names necessary for new task form validaion
+ * @param $projects array of user's projects
+ * @return array
+ */
+function get_projects_names ($projects) {
+    $project_names = [];
+    foreach ($projects as $key => $value){
+        if($value['name'] != 'Все') {
+            array_push($project_names, $value['name']);
+        }
+    }
+    return $project_names;
+}
+/**
  * Returns array of user's tasks depending on category and filter status
  * @param $link database link
  * @param $user_id
@@ -159,7 +173,6 @@ function get_tasks ($link, $user_id, $cookie, $projects, $id, $filter) {
 
     return $task_list;
 }
-
 /**
  * Returns result of search query to database via fulltext search
  * @param $link database link
@@ -173,5 +186,46 @@ function search_tasks ($link, $search, $user_id) {
     mysqli_stmt_execute($stmt);
     $search_task_result = mysqli_stmt_get_result($stmt);
     return $search_task_list = mysqli_fetch_all($search_task_result, MYSQLI_ASSOC);
+}
+
+/**
+ * Inserting new user's task from adding form to database
+ * @param $link database link
+ * @param $new_task new task's parameters from $_GET array
+ * @param $date task's deadline date
+ * @param $projects array of user's projects
+ * @param $key key of choosen project in projects array
+ * @return bool
+ */
+function insert_task ($link, $new_task, $date, $projects, $key) {
+
+    $sql = 'INSERT INTO tasks (dt_add, name, file_path, dt_deadline, user_id, project_id)
+                    VALUES(NOW(), ?, ?, ?, ?, ?)';
+
+    $stmt = db_get_prepare_stmt($link, $sql, [
+        $new_task['task'],
+        $new_task['preview'],
+        $date,
+        $_SESSION['user']['id'],
+        $projects[$key]['id']
+    ]);
+
+    $result = mysqli_stmt_execute($stmt);
+
+    return $result;
+}
+
+/**
+ * Updates task's status from 'undone' to 'done'
+ * @param $link database link
+ * @param $task_id task's id in database
+ * @return bool
+ */
+function update_task_status($link, $task_id) {
+    $sql_set_done = "UPDATE tasks SET dt_done = NOW() WHERE id = ?";
+    $stmt = db_get_prepare_stmt($link, $sql_set_done, [$task_id]);
+    $result = mysqli_stmt_execute($stmt);
+
+    return $result;
 }
 ?>

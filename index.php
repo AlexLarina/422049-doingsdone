@@ -15,8 +15,6 @@
 
     $task_list = [];
     $projects = [];
-    $project_names = [];
-    $tasks_in_category = [];
 
     $body_class = '';
     $username = '';
@@ -37,7 +35,7 @@
         $filter = isset($_GET['filter']) ? $_GET['filter'] : '';
 
         $task_list = get_tasks($db_link, $user_id, $_COOKIE['showcompl'], $projects, $id, $filter);
-
+        
         if (isset($_GET['search'])) {
             $search = $_GET['search'];
             if($search) {
@@ -116,9 +114,8 @@
 
     if(isset($_GET['done'])){
         $task_id = $_GET['done'];
-        $sql_set_done = "UPDATE tasks SET dt_done = NOW() WHERE id = ?";
-        $stmt = db_get_prepare_stmt($db_link, $sql_set_done, [$task_id]);
-        $result = mysqli_stmt_execute($stmt);
+
+        $result = update_task_status($db_link, $task_id);
 
         if($result){
             header('Location: index.php');
@@ -169,6 +166,7 @@
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['task'])) {
         $new_task = $_POST;
         $errors = [];
+        $project_names = get_projects_names($projects);
 
         if (empty($_POST['task'])) {
             $errors['task'] = 'Это поле надо заполнить';
@@ -205,17 +203,8 @@
         } else {
             $key = array_search($new_task['category'], $project_names);
 
-            $sql = 'INSERT INTO tasks (dt_add, name, file_path, dt_deadline, user_id, project_id)
-                    VALUES(NOW(), ?, ?, ?, ?, ?)';
+            $result = insert_task($db_link, $new_task, $date, $projects, $key);
 
-            $stmt = db_get_prepare_stmt($db_link, $sql, [
-                $new_task['task'],
-                $new_task['preview'],
-                $date,
-                $_SESSION['user']['id'],
-                $projects[$key]['id']
-            ]);
-            $result = mysqli_stmt_execute($stmt);
             if($result){
                 header('Location: index.php');
             } else {

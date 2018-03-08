@@ -39,7 +39,7 @@
                         </a>
                     </label>
                 </td>
-                <td class="task__date"><?=(strtotime($value['dt_deadline']) == $time_zone_stamp) ? 'Нет' : htmlspecialchars(date('d.m.Y', strtotime($value['dt_deadline'])))?></td>
+                <td class="task__date"><?=(strtotime($value['dt_deadline']) == $time_zone_stamp || $value['dt_deadline'] == null) ? 'Нет' : htmlspecialchars(date('d.m.Y', strtotime($value['dt_deadline'])))?></td>
             </tr>
     <? endforeach; ?>
 </table>
